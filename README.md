@@ -1,6 +1,8 @@
 # A-Year-of-Code
 Various production-ready coding samples from 2023 up until now.
 
+![foncii-maps_media_static-media_foncii-maps-hero](https://github.com/jcook03266/A-Year-of-Code/assets/63657230/d12054df-4528-4c7b-866a-b010ab713df9)
+
 ## Foncii-API | Development Life Cycle: (February 2023 - May 2024)
 
 > Foncii-API GraphQL SDL
@@ -62,6 +64,80 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 ## Foncii-Web | Development Life Cycle: (June 2023 - May 2024)
+**Live Site:** https://foncii.com/
 
+## Demos
+**Sign-Up + Login**
+### Videos
+<div align="center">
 
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/52cea304-6038-43d3-8fde-f4ca367fae23" />
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/d0003861-f3c9-4975-a29e-814109b0246e" />
 
+</div>
+
+**Explore + Creator Gallery Page**
+### Videos
+<div align="center">
+
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/ff1f39b0-b6ee-45de-99b3-51b132178efe" />
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/3eb9cfe5-77c0-45d2-a9e0-9ee07f276e2b" />
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/5fe2ee61-7613-49c3-a9d6-8001a8335537" />
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/27fa462e-029d-4c2f-9030-4aca46d56bd4" />
+
+</div>
+
+### Photos
+> Explore Page
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/a71174c2-cfd2-44a9-bb0c-bdaa8bd46b1f">
+</div>
+
+> List / Grid Gallery View
+<div align="center">
+<img width="400" src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/99ba505e-9258-4a72-9acf-563bb5a3476b">
+<img width="400" src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/17c63fd4-cea4-49be-82ef-e399d90123fb">
+</div>
+
+> Creator Analytics
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/39f42bfd-04fd-4721-847f-4dced977fbe0">
+</div>
+
+**Taste Profile Quiz**
+### Videos
+<div align="center">
+
+<video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/f1555460-842a-41ec-8239-b9bd0d199808" />
+
+</div>
+
+**Detail Views**
+### Photos
+> Restaurant Detail View
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/866c6ad1-aebe-444d-b6e7-0c52bde96621">
+</div>
+
+> Experience Editor Detail View
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/6ab1370d-d8bc-4311-8107-49b2f7cfa48a">
+</div>
+
+**Menus**
+### Photos
+> Side Menu
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/9059650a-aaec-499d-bfa8-f6f0324c96b4">
+</div>
+
+> More Menu
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/44ad490f-9c12-4894-8ae7-48e7e55ce1a6">
+</div>
+
+**Modals**
+### Photos
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/1028ac99-f6b5-46db-93db-29bb65402a05">
+</div>
