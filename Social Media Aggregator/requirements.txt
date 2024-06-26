@@ -1,0 +1,28 @@
+# Instructions: To install dependencies run: pip install -r requirements.txt
+# Networking
+requests
+
+# Instagram Scraping
+# Free
+instagrapi
+# Paid
+hikerapi
+Pillow>=8.1.1
+
+# Progress bar
+tqdm
+
+# Data Handling
+pandas
+
+# Google  API
+google-cloud-storage
+googlemaps
+
+# Google Cloud Run
+Flask==3.0.0
+gunicorn==20.1.0
+Werkzeug==3.0.1
+
+# Flask API
+Flask-RESTful

@@ -1,0 +1,9 @@
+mutation SetLastActive($userId: ID!) {
+  setLastActive(userID: $userId) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

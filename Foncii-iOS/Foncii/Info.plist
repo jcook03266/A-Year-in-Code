@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.594762600292-3f52l9edfjl2mtegjeb46hv5brddumuh</string>
+				<string>fb706379974033225</string>
+			</array>
+		</dict>
+	</array>
+	<key>CLIENT_ID</key>
+	<string>$(CLIENT_ID)</string>
+	<key>FONCII_DEV_SERVER_ENDPOINT</key>
+	<string>http://localhost:8080/</string>
+	<key>FONCII_PROD_SERVER_ENDPOINT</key>
+	<string>https://main--foodie-supergraph.apollographos.net/graphql</string>
+	<key>FONCII_SERVER_API_KEY</key>
+	<string>$(FONCII_SERVER_API_KEY)</string>
+	<key>AMPLITUDE_PROD_API_KEY</key>
+	<string>$(AMPLITUDE_PROD_API_KEY)</string>
+	<key>AMPLITUDE_DEV_API_KEY</key>
+	<string>$(AMPLITUDE_DEV_API_KEY)</string>
+	<key>FacebookAppID</key>
+	<string>706379974033225</string>
+	<key>FacebookClientToken</key>
+	<string>c6627880529eb6b3fa65d192d56a60ed</string>
+	<key>FacebookDisplayName</key>
+	<string>Foncii</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Lato-Italic.ttf</string>
+		<string>Lato-BlackItalic.ttf</string>
+		<string>Lato-BoldItalic.ttf</string>
+		<string>Lato-LightItalic.ttf</string>
+		<string>Lato-ThinItalic.ttf</string>
+		<string>Lato-Thin.ttf</string>
+		<string>Lato-Light.ttf</string>
+		<string>Lato-Black.ttf</string>
+		<string>Lato-Regular.ttf</string>
+		<string>Lato-Bold.ttf</string>
+		<string>Lato-SemiBold.ttf</string>
+		<string>Lato-Medium.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+</dict>
+</plist>

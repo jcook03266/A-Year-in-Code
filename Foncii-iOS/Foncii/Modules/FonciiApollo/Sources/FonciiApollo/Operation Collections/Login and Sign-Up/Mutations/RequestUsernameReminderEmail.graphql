@@ -1,0 +1,9 @@
+mutation RequestUsernameReminderEmail($email: ID!) {
+  requestUsernameReminderEmail(email: $email) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

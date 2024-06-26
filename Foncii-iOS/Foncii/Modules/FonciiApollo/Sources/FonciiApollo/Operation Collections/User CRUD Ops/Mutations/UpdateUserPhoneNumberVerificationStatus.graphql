@@ -1,0 +1,9 @@
+mutation UpdateUserPhoneNumberVerificationStatus($input: UpdateUserPhoneNumberVerificationStatusInput!) {
+  updateUserPhoneNumberVerificationStatus(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

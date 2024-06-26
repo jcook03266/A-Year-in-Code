@@ -1,0 +1,9 @@
+# Instructions: To install dependencies run: pip install -r requirements.txt
+# Web Scraping
+selenium
+
+# Environment Configurations
+python-dotenv
+
+# Networking
+requests

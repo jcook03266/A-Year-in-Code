@@ -1,0 +1,52 @@
+mutation AddFavoriteRestaurant($input: FavoritedRestaurantInput!) {
+  addFavoriteRestaurant(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+    updatedPersonalizedRestaurant {
+      restaurant {
+        id
+        name
+        heroImageURL
+        imageCollectionURLs
+        description
+        categories
+        priceLevel
+        phoneNumber
+        operatingHours {
+          Monday
+          Tuesday
+          Wednesday
+          Thursday
+          Friday
+          Saturday
+          Sunday
+        }
+        servesAlcohol
+        website
+        _geoloc {
+          lat
+          lng
+        }
+        addressProperties {
+          formattedAddress
+          streetAddress
+          zipCode
+          city
+          stateCode
+          countryCode
+        }
+        googleProperties {
+          rating
+        }
+        yelpProperties {
+          rating
+        }
+      }
+      percentMatch
+      isFavorited
+    }
+  }
+}

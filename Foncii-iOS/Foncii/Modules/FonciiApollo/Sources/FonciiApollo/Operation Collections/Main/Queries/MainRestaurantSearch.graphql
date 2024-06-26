@@ -1,0 +1,48 @@
+query MainRestaurantSearch($input: SearchForRestaurantsInput) {
+  searchForRestaurants(input: $input) {
+    restaurants {
+      restaurant {
+        id
+        name
+        heroImageURL
+        imageCollectionURLs
+        description
+        priceLevel
+        phoneNumber
+        operatingHours {
+          Monday
+          Tuesday
+          Wednesday
+          Thursday
+          Friday
+          Saturday
+          Sunday
+        }
+        servesAlcohol
+        website
+        _geoloc {
+          lat
+          lng
+        }
+        googleProperties {
+          rating
+        }
+        yelpProperties {
+          rating
+        }
+        categories
+        addressProperties {
+          formattedAddress
+          streetAddress
+          zipCode
+          city
+          stateCode
+          countryCode
+        }
+      }
+      percentMatch
+      isFavorited
+    }
+    queryID
+  }
+}

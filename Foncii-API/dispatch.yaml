@@ -1,0 +1,32 @@
+# This default service is used to override routing rules, allowing us to send
+# incoming requests to a specific service based on the path or hostname in the URL
+# Documentation here: https://cloud.google.com/appengine/docs/legacy/standard/python/reference/dispatch-yaml
+dispatch:
+  # Route requests to the API subdomain to this default service as this is the primary backend
+  - url: "api.foncii.com/*"
+    service: default # fonci-api
+
+  # Route requests to the staging API subdomain to this default service as this is the primary backend
+  - url: "staging.api.foncii.com/*"
+    service: staging-foncii-api
+
+    # Foncii Maps handler for main WWWW subdomain
+  - url: "www.foncii.com/*"
+    service: "foncii-maps"
+
+    # Foncii Maps handler for main domain
+  - url: "foncii.com/*"
+    service: "foncii-maps"
+
+  # Foncii Maps handler for staging subdomain (foncii.com)
+  - url: "staging.foncii.com/*"
+    service: "foncii-maps-staging"
+
+  # LEGACY ENDPOINTS (Redirects to new endpoints)
+  # Route Foncii Maps traffic to the Foncii Maps service
+  - url: "maps.foncii.com/*"
+    service: "foncii-maps"
+
+  # Foncii Maps handler for WWW subdomain
+  - url: "www.maps.foncii.com/*"
+    service: "foncii-maps"

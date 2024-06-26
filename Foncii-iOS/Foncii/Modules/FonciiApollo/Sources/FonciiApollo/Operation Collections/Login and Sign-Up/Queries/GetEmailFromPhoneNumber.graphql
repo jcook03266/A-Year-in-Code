@@ -1,0 +1,3 @@
+query GetEmailFromPhoneNumber($phoneNumberInput: PhoneNumberInput!) {
+  getUserEmailFromPhoneNumber(phoneNumberInput: $phoneNumberInput)
+}

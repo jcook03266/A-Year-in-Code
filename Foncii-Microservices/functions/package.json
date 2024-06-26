@@ -1,0 +1,38 @@
+{
+  "name": "functions",
+  "scripts": {
+    "build": "tsc --declaration",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "compile-gql-types": "graphql-codegen",
+    "watch-gql-codegen": "graphql-codegen -w"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "axios": "^1.6.8",
+    "bson": "^6.1.0",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^4.2.0",
+    "graphql": "^16.8.0",
+    "lodash": "^4.17.21",
+    "mongodb": "6.0",
+    "node-fetch": "^2.7.0",
+    "pino": "^8.15.0",
+    "pino-pretty": "^10.2.0",
+    "sharp": "^0.32.5"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.4",
+    "firebase-functions-test": "^3.0.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}

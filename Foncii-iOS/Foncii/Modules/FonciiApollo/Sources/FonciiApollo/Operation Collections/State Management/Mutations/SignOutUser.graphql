@@ -1,0 +1,9 @@
+mutation SignOutUser($input: UserSignOutInput!) {
+  signOutUser(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

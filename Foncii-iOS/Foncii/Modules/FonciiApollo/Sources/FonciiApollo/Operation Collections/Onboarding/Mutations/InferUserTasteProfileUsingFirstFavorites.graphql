@@ -1,0 +1,22 @@
+mutation InferUserTasteProfileUsingFirstFavorites($userId: ID!) {
+  inferUserTasteProfileUsingFirstFavorites(userID: $userId) {
+    tasteProfile {
+      id
+      adventureLevel
+      restaurantRatingImportanceLevel
+      distancePreferenceLevel
+      prefersDrinks
+      favoriteCuisines
+      foodRestrictions
+      preferredPriceLevels
+      preferredMealTypes
+      creationDate
+      lastUpdated
+    }
+    errors {
+      errorCode
+      description
+    }
+    statusCode
+  }
+}

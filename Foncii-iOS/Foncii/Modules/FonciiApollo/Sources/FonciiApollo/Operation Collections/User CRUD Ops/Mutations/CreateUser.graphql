@@ -1,0 +1,27 @@
+mutation CreateUser($input: CreateNewUserInput!) {
+  createUser(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+    newUser {
+      id
+      fullName
+      username
+      email
+      phoneNumber
+      authProviders
+      isPhoneNumberVerified
+      creationDate
+      profilePictureURL
+      lastUpdated
+      notificationsEnabled
+      profileTasks {
+        id
+        isComplete
+      }
+      referralCode
+    }
+  }
+}

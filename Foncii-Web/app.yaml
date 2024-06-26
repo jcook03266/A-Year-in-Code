@@ -1,0 +1,38 @@
+service: foncii-maps
+runtime: nodejs20
+env: standard
+
+instance_class: F4_1G
+automatic_scaling:
+  target_cpu_utilization: 0.9 # Anything above this spawns a new instance
+  min_instances: 1 # Always keep at least 1 instance running in order to mitigate cold starts
+  max_instances: 4 # Bounded for now, scale up as demand increases
+  max_pending_latency: 500ms
+
+handlers:
+  - url: /.*
+    secure: optional
+    redirect_http_response_code: 301
+    script: auto
+
+  - url: /
+    static_files: build/index.html
+    upload: build/index.html
+
+  - url: /
+    static_dir: build
+
+# Set environment to production when deploying
+env_variables:
+  # Next's only allowed values are production, development and test - use a custom one
+  NEXT_PUBLIC_NODE_ENV_CUSTOM: "production"
+  # Server-Only Variables
+  PROD_PORT: "8080"
+  DEV_PORT: "3000"
+  # Client Side Variables, exposed by Next at buildtime
+  NEXT_PUBLIC_FONCII_API_ENDPOINT: "https://api.foncii.com/"
+  NEXT_PUBLIC_FONCII_API_AUTH_TOKEN: "Bearer Y1dsSGRHRnNRakUyUlZKcGMxRnplR2d5WVVKNFQwRXdUWEZMTWpoblQxVnFTVWRLUTBGbFVGTnhkeTB0VlQxT1QxRlVNRU0xWTA1MmJqUkdUVmM0YUNwTVpIbGZNa1JJY2l0cmJRPT0="
+  NEXT_PUBLIC_FIREBASE_CONFIG_API_KEY: "AIzaSyAYLxAtLvOkUSscSwh5D1LAbN-QXaODaqU"
+  NEXT_PUBLIC_AMPLITUDE_API_KEY: "4fb89cb519b1b77bc8c6f5d6ff61fc00"
+  NEXT_PUBLIC_MAPBOX_TOKEN: "pk.eyJ1IjoieW91c3NlZjE3IiwiYSI6ImNsM3d5b29sZzBldmczaXF0OWk2ZjgxZG8ifQ.FhvLlvQlBEtz3dJrUKblUw"
+  NEXT_PUBLIC_INSTAGRAM_CLIENT_ID: "441821997622037"

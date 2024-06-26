@@ -1,0 +1,15 @@
+<svg width="21" height="24" viewBox="0 0 21 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g id="mail" clip-path="url(#clip0_5694_68850)">
+        <path id="Vector"
+            d="M18.1192 4H2.88108C1.82911 4 0.976318 4.89543 0.976318 6V18C0.976318 19.1046 1.82911 20 2.88108 20H18.1192C19.1711 20 20.0239 19.1046 20.0239 18V6C20.0239 4.89543 19.1711 4 18.1192 4Z"
+            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path id="Vector_2"
+            d="M20.0239 7L11.4811 12.7C11.1871 12.8934 10.8471 12.996 10.5001 12.996C10.1532 12.996 9.8132 12.8934 9.51918 12.7L0.976318 7"
+            stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <defs>
+        <clipPath id="clip0_5694_68850">
+            <rect width="22.8571" height="24" fill="white" transform="translate(-0.928467)" />
+        </clipPath>
+    </defs>
+</svg>

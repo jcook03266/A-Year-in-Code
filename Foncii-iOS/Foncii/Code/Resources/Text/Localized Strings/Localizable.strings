@@ -1,0 +1,285 @@
+/*
+ Localizable.strings
+ Foncii
+ 
+ Created by Justin Cook on 2/10/23.
+ */
+
+// MARK: --- Shared
+// MARK: - App Specific:
+"APP_NAME" = "Foncii";
+"APP_SLOGAN" = "Save Time, Eat Better";
+
+// MARK: - Shared Scenes:
+"ONE_TIME_PASSCODE" = "One-Time Passcode";
+"LOG_IN" = "Log In";
+"SIGN_UP" = "Sign Up";
+"USERNAME" = "Username";
+"PASSWORD" = "Password";
+"EMAIL" = "Email";
+"PHONE_NUMBER" = "Phone Number";
+"FULL_NAME" = "Full Name";
+"OR" = "Or";
+"SEND" = "Send";
+"REQUEST" = "Request";
+"EMAIL_PLACEHOLDER" = "name@example.com";
+"CONFIRMATION_MESSAGE_1" = "Sent Successfully!";
+"DONE" = "Done";
+"SUBMIT" = "Submit";
+"NEXT" = "Next";
+"SKIP" = "Skip";
+"SEARCH" = "Search";
+"RESTAURANT_SEARCHBAR_PLACEHOLDER" = "Search for restaurants";
+"TEXT_FIELD_PLACEHOLDER_SEARCH_BY_NAME" = "Search by name";
+"LOCATION_UNAVAILABLE" = "Location Unavailable";
+"HI_GREETING" = "Hi";
+"FAILED_FETCH_REQUEST" = "Something went wrong on our end, try that again later.";
+"NO_SEARCH_RESULTS" = "Sorry, we couldn’t find the restaurant you’re looking for.";
+"UPDATE" = "Update";
+"MAJOR_CITIES" = "Major Cities";
+"COMPLETE" = "Complete";
+"VIEW_ALL" = "View All";
+"SETTINGS" = "Settings";
+"NOTIFICATIONS" = "Notifications";
+"BREAKFAST" = "Breakfast";
+"LUNCH" = "Lunch";
+"DINNER" = "Dinner";
+"DESSERT" = "Dessert";
+"ONE_DOLLAR_SIGN" = "$";
+"TWO_DOLLAR_SIGNS" = "$$";
+"THREE_DOLLAR_SIGNS" = "$$$";
+"FOUR_DOLLAR_SIGNS" = "$$$$";
+"LOG_OUT" = "Log Out";
+"MATCH" = "Match";
+
+// MARK: --- Other
+// MARK: - Networking Service Diagnostic Information
+"HUMAN_READABLE_INTERNET_UNAVAILABLE_UNKNOWN_REASON" = "An unknown error has occurred and the reason for your lack of connection cannot be determined at this time. Please try again later.";
+"HUMAN_READABLE_INTERNET_NOT_AVAILABLE" = "Your internet connection is currently unavailable, please check your connection settings and try again.";
+"HUMAN_READABLE_INTERNET_CELLULAR_DENIED" = "Please enable your cellular data in order to access the internet.";
+"HUMAN_READABLE_INTERNET_WIFI_DENIED" = "Your wifi is disabled, please enable it in order to access the internet.";
+"HUMAN_READABLE_INTERNET_LOCAL_NETWORK_DENIED" = "Access to your local network is not possible at this time, please check your connection settings and try again.";
+
+// MARK: --- Specific Scenes
+// MARK: -- Main Scene
+// MARK: - Home Tab
+// MARK: - Home Screen:
+"HOME_SCREEN_FYP_TAB_TITLE" = "For You";
+"HOME_SCREEN_TRENDING_TAB_TITLE" = "Trending";
+
+// MARK: - Date and Location Editor:
+"DATE_AND_LOCATION_EDITOR_INPUT_1_TITLE" = "Pick a reservation date.";
+"DATE_AND_LOCATION_EDITOR_INPUT_2_TITLE" = "Choose a city to change your location.";
+"DATE_AND_LOCATION_EDITOR_INPUT_2_TEXT" = "Search by City";
+
+// MARK: - Map Tab
+// MARK: - Map Screen:
+
+// MARK: - Profile Tab
+// MARK: - Profile Screen:
+"PROFILE_SCREEN_FAVORITES_TAB_TITLE" = "Favorites";
+"PROFILE_SCREEN_RECOMMENDATIONS_TAB_TITLE" = "Recommendations";
+"PROFILE_SCREEN_LOCATIONS_HEADER_TEXT" = "Locations";
+"PROFILE_SCREEN_NO_RECOMMENDATIONS_FOUND_PROMPT" = "No recommendations yet, time to invite more friends to the party";
+"PROFILE_SCREEN_NO_FAVORITES_FOUND_PROMPT" = "We couldn't find any of your favorite spots, go and explore more!";
+
+// MARK: - Settings Screen
+"SETTINGS_SCREEN_PROFILE_INFORMATION_ROW_TITLE" = "Profile Information";
+"SETTINGS_SCREEN_PROFILE_INFORMATION_ROW_SUBTITLE" = "Change your account information";
+"SETTINGS_SCREEN_UPDATE_TASTE_PROFILE_ROW_TITLE" = "Update Taste Profile";
+"SETTINGS_SCREEN_UPDATE_TASTE_PROFILE_ROW_SUBTITLE" = "Change your food restrictions, etc";
+"SETTINGS_SCREEN_CHANGE_PASSWORD_ROW_TITLE" = "Change Password";
+"SETTINGS_SCREEN_CHANGE_PASSWORD_ROW_SUBTITLE" = "Change your password";
+"SETTINGS_SCREEN_REFER_TO_FRIENDS_ROW_TITLE" = "Refer to Friends";
+"SETTINGS_SCREEN_REFER_TO_FRIENDS_ROW_SUBTITLE" = "Invite your friends to Foncii!";
+"SETTINGS_SCREEN_PUSH_NOTIFICATIONS_ROW_TITLE" = "Push Notifications";
+"SETTINGS_SCREEN_PUSH_NOTIFICATIONS_ROW_SUBTITLE" = "Stay up to date anywhere";
+"SETTINGS_SCREEN_RATE_US_ROW_TITLE" = "Rate Us";
+"SETTINGS_SCREEN_RATE_US_ROW_SUBTITLE" = "Rate us on the app store";
+"SETTINGS_SCREEN_HELP_AND_SUPPORT_ROW_TITLE" = "Help and Support";
+"SETTINGS_SCREEN_HELP_AND_SUPPORT_ROW_SUBTITLE" = "Frequently asked questions";
+
+// MARK: - Taste Profile Questionnaire Screen
+// Page Title
+"TASTE_PROFILE_ADVENTURE_LEVEL_QUESTION_PAGE_HEADER" = "Adventure";
+"TASTE_PROFILE_DRINK_PREFERENCE_QUESTION_PAGE_HEADER" = "Drinks";
+"TASTE_PROFILE_RESTAURANT_RATING_IMPORTANCE_LEVEL_QUESTION_PAGE_HEADER" = "Ratings";
+"TASTE_PROFILE_FOOD_ATMOSPHERE_SERVICE_BALANCE_QUESTION_PAGE_HEADER" = "Quality";
+"TASTE_PROFILE_PREFERRED_MEAL_TYPES_QUESTION_PAGE_HEADER" = "Meals";
+"TASTE_PROFILE_PREFERRED_PRICE_LEVELS_QUESTION_PAGE_HEADER" = "Pricing";
+"TASTE_PROFILE_DISTANCE_PREFERENCE_LEVEL_QUESTION_PAGE_HEADER" = "Travel";
+"TASTE_PROFILE_CUISINE_PREFERENCE_QUESTION_PAGE_HEADER" = "Pick Your Favorites";
+"TASTE_PROFILE_FOOD_RESTRICTION_PREFERENCE_QUESTION_PAGE_HEADER" = "Dietary Preferences";
+
+// Suggestion Entry
+"TASTE_PROFILE_SUGGESTION_ENTRY_PLACEHOLDER" = "Suggest a restriction";
+"TASTE_PROFILE_SUGGESTION_ENTRY_PROMPT" = "Your suggestions help us to provide additional options for dietary preferences and restrictions";
+
+// MARK: - Taste Profile Q&As
+// Question
+"TASTE_PROFILE_ADVENTURE_LEVEL_QUESTION_TITLE" = "How adventurous of an eater are you?";
+// Answers
+"TASTE_PROFILE_ADVENTURE_LEVEL_QUESTION_ANSWER_1" = "I’m the pickiest eater in my social circle";
+"TASTE_PROFILE_ADVENTURE_LEVEL_QUESTION_ANSWER_2" = "I usually stay in my comfort zone but willing to venture out";
+"TASTE_PROFILE_ADVENTURE_LEVEL_QUESTION_ANSWER_3" = "I love trying new foods";
+"TASTE_PROFILE_ADVENTURE_LEVEL_QUESTION_ANSWER_4" = "I’ll eat almost anything in front of me";
+
+// Question
+"TASTE_PROFILE_DRINK_PREFERENCE_QUESTION_TITLE" = "Which would you prefer?";
+// Answers
+"TASTE_PROFILE_DRINK_PREFERENCE_QUESTION_ANSWER_1" = "A restaurant with an excellent wine collection and drink menu";
+"TASTE_PROFILE_DRINK_PREFERENCE_QUESTION_ANSWER_2" = "A restaurant with amazing food";
+
+// Question
+"TASTE_PROFILE_RESTAURANT_RATING_IMPORTANCE_LEVEL_QUESTION_TITLE" = "How much value do you put in restaurant ratings?";
+// Answers
+"TASTE_PROFILE_RESTAURANT_RATING_IMPORTANCE_LEVEL_QUESTION_ANSWER_1" = "Very much so";
+"TASTE_PROFILE_RESTAURANT_RATING_IMPORTANCE_LEVEL_QUESTION_ANSWER_2" = "Somewhat";
+"TASTE_PROFILE_RESTAURANT_RATING_IMPORTANCE_LEVEL_QUESTION_ANSWER_3" = "Not so much";
+"TASTE_PROFILE_RESTAURANT_RATING_IMPORTANCE_LEVEL_QUESTION_ANSWER_4" = "None at all";
+
+// Question
+"TASTE_PROFILE_FOOD_ATMOSPHERE_SERVICE_BALANCE_QUESTION_TITLE" = "Do you eat at restaurants for the food, atmosphere, or service?";
+// Answers
+"TASTE_PROFILE_FOOD_ATMOSPHERE_SERVICE_BALANCE_QUESTION_ANSWER_1" = "Only for the food";
+"TASTE_PROFILE_FOOD_ATMOSPHERE_SERVICE_BALANCE_QUESTION_ANSWER_2" = "Mostly the food but atmosphere and service are important too";
+"TASTE_PROFILE_FOOD_ATMOSPHERE_SERVICE_BALANCE_QUESTION_ANSWER_3" = "I care mostly about the atmosphere and service; food is supplementary";
+"TASTE_PROFILE_FOOD_ATMOSPHERE_SERVICE_BALANCE_QUESTION_ANSWER_4" = "All three components equally play a part in a great restaurant experience";
+
+// Question
+"TASTE_PROFILE_PREFERRED_MEAL_TYPES_QUESTION_TITLE" = "Which meals do you dine out most for?";
+
+// Question
+"TASTE_PROFILE_PREFERRED_PRICE_LEVELS_QUESTION_TITLE" = "How much money would you spend on yourself when dining out alone or with others?";
+
+// Question
+"TASTE_PROFILE_DISTANCE_PREFERENCE_LEVEL_QUESTION_TITLE" = "If you came across an amazing restaurant, how far would you travel to check it out?";
+// Answers
+"TASTE_PROFILE_DISTANCE_PREFERENCE_LEVEL_QUESTION_ANSWER_1" = "Less than one mile";
+"TASTE_PROFILE_DISTANCE_PREFERENCE_LEVEL_QUESTION_ANSWER_2" = "1-5 miles";
+"TASTE_PROFILE_DISTANCE_PREFERENCE_LEVEL_QUESTION_ANSWER_3" = "5-10 miles";
+"TASTE_PROFILE_DISTANCE_PREFERENCE_LEVEL_QUESTION_ANSWER_4" = "More than 10 miles";
+
+// Question
+"TASTE_PROFILE_CUISINE_PREFERENCE_QUESTION_TITLE" = "By choosing your favorite cuisines, Foncii will curate the most relevant recommendations";
+
+// Question
+"TASTE_PROFILE_FOOD_RESTRICTION_PREFERENCE_QUESTION_TITLE" = "Select any dietary preferences or dietary restrictions you might have";
+
+// MARK: -- Onboarding Scene
+// MARK: - Log In Screen:
+"LOGIN_SCREEN_PROMPT_SUBTITLE_FRAGMENT_1" = "Enter your Username, Email or Phone Number";
+"LOGIN_SCREEN_PROMPT_SUBTITLE_FRAGMENT_2" = "to log in. Or";
+"LOGIN_SCREEN_PROMPT_CREATE_NEW_ACCOUNT_BUTTON_TEXT" = "Create a new account.";
+"LOGIN_SCREEN_INPUT_FIELD_1_PLACEHOLDER" = "Username, email, or phone number";
+"LOGIN_SCREEN_INCORRECT_USER_IDENTIFIER" = "Unrecognized login credential. Please try again or reset your username below.";
+"LOGIN_SCREEN_INCORRECT_PASSWORD" = "Incorrect password. Please try again or reset your password below.";
+
+/// Forgot username or password string split into 3 parts to allow for 2 text buttons to be combined within the string
+"LOGIN_SCREEN_FORGOT_LOGIN_PROMPT_FRAGMENT_1" = "Forgot your";
+"LOGIN_SCREEN_FORGOT_LOGIN_PROMPT_FRAGMENT_2" = "or";
+"LOGIN_SCREEN_FORGOT_LOGIN_PROMPT_FRAGMENT_3" = "?";
+
+// MARK: - Reset Password Screen:
+"RESET_PASSWORD_SCREEN_TITLE_LOGGED_OUT" = "Forgot Password";
+/// For logged in users that wish to reset their password
+"RESET_PASSWORD_SCREEN_TITLE_LOGGED_IN" = "Reset Password";
+"RESET_PASSWORD_SCREEN_INSTRUCTIONS" = "Enter your email address and we will send you instructions on how to reset your password.";
+"RESET_PASSWORD_SCREEN_UNKNOWN_EMAIL" = "We don't recognize that email address, try typing it again.";
+
+// MARK: - Forgot Username Screen:
+"FORGOT_USERNAME_SCREEN_TITLE" = "Forgot Username";
+"FORGOT_USERNAME_SCREEN_INSTRUCTIONS" = "Enter your email address and we will send you a reminder.";
+"FORGOT_USERNAME_SCREEN_UNKNOWN_EMAIL" = "We don't recognize that email address, try typing it again.";
+
+// MARK: - Sign Up Screen:
+"SIGN_UP_SCREEN_PROMPT_SUBTITLE_FRAGMENT_1" = "Enter your Name, Email or Password to sign";
+"SIGN_UP_SCREEN_PROMPT_SUBTITLE_FRAGMENT_2" = "up.";
+"SIGN_UP_SCREEN_PROMPT_SUBTITLE_FRAGMENT_3" = "Already have an account?";
+"SIGN_UP_SCREEN_PHONE_NUMBER_INSTRUCTIONS" = "Message & data rates may apply.";
+"SIGN_UP_SCREEN_USERNAME_INSTRUCTIONS" = "Usernames must have a minimum of 4 characters. No special characters. (Only letters, numbers)";
+"SIGN_UP_SCREEN_PASSWORD_INSTRUCTIONS" = "Passwords must have a minimum of 8 letters or numbers and at least one special character (!,@,?,#).";
+"SIGN_UP_SCREEN_PHONE_NUMBER_ALREADY_IN_USE_WARNING" = "This phone number is already being used with another account. Please enter a different phone number.";
+"SIGN_UP_SCREEN_EMAIL_ALREADY_IN_USE_WARNING" = "This email is already being used with another account. Please enter a different email.";
+"SIGN_UP_SCREEN_USERNAME_ALREADY_IN_USE_WARNING" = "This username is already being used with another account. Please enter a different username.";
+
+// MARK: - OTP Screen
+"OTP_SCREEN_SUBHEADING" = "Enter Passcode";
+"OTP_SCREEN_TOP_PROMPT" = "Please enter the six digit code we sent via SMS to your phone.";
+"OTP_SCREEN_RESEND_PROMPT_FRAGMENT_1" = "Didn’t receive it?";
+"OTP_SCREEN_RESEND_PROMPT_FRAGMENT_2" = "Tap to resend.";
+
+// MARK: - Enable Location Screen
+"ENABLE_LOCATION_SCREEN_TITLE_FRAGMENT_1" = "Where ";
+"ENABLE_LOCATION_SCREEN_TITLE_FRAGMENT_2" = "Are ";
+"ENABLE_LOCATION_SCREEN_TITLE_FRAGMENT_3" = "You ";
+"ENABLE_LOCATION_SCREEN_TITLE_FRAGMENT_4" = "Right ";
+"ENABLE_LOCATION_SCREEN_TITLE_FRAGMENT_5" = "Now";
+"ENABLE_LOCATION_SCREEN_TITLE_FRAGMENT_6" = "?";
+
+"ENABLE_LOCATION_SCREEN_SUBTITLE" = "Grant Foncii location access to get the best restaurant recommendations based on where you are.";
+"ENABLE_LOCATION_SCREEN_BUTTON_TITLE" = "Enable Location";
+
+// MARK: - Aggregation Phase Overlay
+"AGGREGATION_PHASE_OVERLAY_SEARCHING_STATE_TITLE" = "Finding Restaurants Around";
+"AGGREGATION_PHASE_OVERLAY_INDEXING_STATE_TITLE" = "Indexing Restaurants Around";
+"AGGREGATION_PHASE_OVERLAY_DONE_STATE_TITLE" = "Done Finding Restaurants Around";
+"AGGREGATION_PHASE_OVERLAY_FAILED_STATE_TITLE" = "Failed To Find Restaurants, Please Try Again Later For";
+
+"AGGREGATION_PHASE_OVERLAY_SUBTITLE" = "The restaurants that you discover help not only you, but other Foncii members find their perfect match faster.";
+
+// MARK: - Select Favorite Restaurants Screen
+"SELECT_FAVORITES_SCREEN_TITLE" = "Choose 3 or more of your favorite restaurants.";
+
+// MARK: - Alert Titles, Messages, and Action Descriptions
+// Generic Alert Strings
+"GENERIC_ALERT_TITLE" = "Error";
+"GENERIC_ALERT_MESSAGE" = "An error has occurred, please try again.";
+"GENERIC_ALERT_OK_ACTION" = "Ok";
+"GENERIC_ALERT_CANCEL_ACTION" = "Cancel";
+"GENERIC_ALERT_RETRY_ACTION" = "Retry";
+"GENERIC_ALERT_CONFIRM_ACTION" = "Confirm";
+"GENERIC_ALERT_SUBMIT_ACTION" = "Confirm";
+"GENERIC_ALERT_DELETE_ACTION" = "Delete";
+
+// MARK: - Error Alerts
+// OTP Errors
+"OTP_ERROR_ALERT_TITLE" = "One-Time Passcode Error";
+"OTP_ERROR_VALIDATION_UNAVAILABLE_ALERT_MESSAGE" = "We cannot validate your one-time passcode at this time, please try again later.";
+"OTP_ERROR_REQUEST_UNAVAILABLE_ALERT_MESSAGE" = "Requesting a one-time passcode is not available at this time, please try again later.";
+"OTP_ERROR_RESEND_REQUEST_UNAVAILABLE_ALERT_MESSAGE" = "Requesting another one-time passcode is not available at this time, please try again later.";
+"OTP_ERROR_VALIDATION_FAILED_ALERT_MESSAGE" = "You've entered an invalid passcode. Remaining attempts:";
+
+// Forgot Password Errors
+"FORGOT_PASSWORD_ERROR_TITLE" = "Forgot Password Error";
+"FORGOT_PASSWORD_ERROR_REQUEST_LIMIT_REACHED_ALERT_MESSAGE" = "You've already requested the maximum amount of password resets for this session. Check your email, and be sure to also check your spam folder just in case.";
+"FORGOT_PASSWORD_ERROR_REQUEST_FAILED_ALERT_MESSAGE" = "An error has occurred and we weren't able to send you a password reset email. Please try again.";
+
+// Forgot Username Errors
+"FORGOT_USERNAME_ERROR_TITLE" = "Forgot Username Error";
+"FORGOT_USERNAME_ERROR_REQUEST_LIMIT_REACHED_ALERT_MESSAGE" = "You've already requested the maximum amount of username reminders for this session. Check your email, and be sure to also check your spam folder just in case.";
+"FORGOT_USERNAME_ERROR_REQUEST_FAILED_ALERT_MESSAGE" = "An error has occurred and we weren't able to send you a reminder email. Please try again.";
+
+// Login Errors
+"LOGIN_ERROR_ALERT_TITLE" = "Login Error";
+"LOGIN_ERROR_NO_USER_DATA_FETCHED_ALERT_MESSAGE" = "A networking error has occurred, please try logging in again. Make sure you're connected to the internet.";
+
+// Sign Up Errors
+"SIGN_UP_ERROR_ALERT_TITLE" = "Sign-Up Error";
+"SIGN_UP_ERROR_NO_USER_DATA_FETCHED_ALERT_MESSAGE" = "A networking error has occurred, please try submitting your request again. Make sure you're connected to the internet.";
+"SIGN_UP_ERROR_FIREBASE_USER_CREATION_FAILED_MESSAGE" = "An error has ocurred and a new account cannot be created at this time. Please try again later, and make sure you're connected to a stable internet connection.";
+
+// Aggregation Errors
+"AGGREGATION_ERROR_ALERT_TITLE" = "Aggregation Error";
+"AGGREGATION_ERROR_NO_INTERNET_ALERT_MESSAGE" = "Aggregating restaurants is currently unavailable, please connect to a stable internet source to continue.";
+
+// Restaurant Interaction Errors
+"RESTAURANT_INTERACTION_ERROR_ALERT_TITLE" = "Restaurant Interaction Error";
+"RESTAURANT_INTERACTION_ERROR_OPERATION_FAILED_ALERT_MESSAGE" = "This restaurant interaction is currently unavailable, please try again later.";
+
+// Network Errors
+"NETWORK_ERROR_ALERT_TITLE" = "Network Error";
+"NETWORK_ERROR_INTERNET_UNAVAILABLE_ALERT_MESSAGE" = "Your internet connection is currently unavailable. Reconnect to continue.";
+
+// MARK: - Confirmation Alerts
+// ...

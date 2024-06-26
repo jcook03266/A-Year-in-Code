@@ -1,0 +1,47 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Fastlane automatic updates
+update_fastlane
+
+# fastlane/Fastfile
+default_platform :ios
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+platform :ios do
+  before_all do
+    setup_circle_ci
+  end
+  
+# Lanes
+desc "Run test build"
+lane :build do
+  scan(
+      scheme: "FonciiTests",
+      clean: true,
+      output_directory: "build",
+      devices: ["iPhone 14 Pro"]
+    )
+end
+
+#desc "Execute all tests"
+#  lane :test do
+#    scan(
+#      devices: ["iPhone 14 Pro"],
+#      workspace: "project.xcworkspace",
+#      scheme: "FonciiTests",
+#      test_without_building: true,
+#      derived_data_path: "derived_data"
+#      )
+#  end
+end

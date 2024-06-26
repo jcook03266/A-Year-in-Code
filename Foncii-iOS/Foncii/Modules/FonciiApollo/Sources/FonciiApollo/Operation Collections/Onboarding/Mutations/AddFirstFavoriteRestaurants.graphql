@@ -1,0 +1,9 @@
+mutation AddFirstFavoriteRestaurants($input: FirstFavoritedRestaurantsInput!) {
+  addFirstFavoriteRestaurants(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

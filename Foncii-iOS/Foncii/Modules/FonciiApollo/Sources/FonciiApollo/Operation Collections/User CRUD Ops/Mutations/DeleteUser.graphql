@@ -1,0 +1,9 @@
+mutation DeleteUser($input: DeleteUserInput!) {
+  deleteUser(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}
