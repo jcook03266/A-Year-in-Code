@@ -1,0 +1,9 @@
+mutation TrackRestaurantPersonalizationEvent($input: RestaurantPersonalizationEventTrackingInput) {
+  trackRestaurantPersonalizationEvent(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

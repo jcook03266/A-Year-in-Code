@@ -1,0 +1,39 @@
+service: foncii-maps-staging
+runtime: nodejs20
+env: standard
+# Note: Entry-point attribute does not work for Node.js, default is start command
+
+instance_class: F4
+automatic_scaling:
+  target_cpu_utilization: 0.95 # Anything above this spawns a new instance
+  min_instances: 0 # Staging, no need for a constantly running service
+  max_instances: 1
+
+handlers:
+  - url: /.*
+    secure: optional
+    redirect_http_response_code: 301
+    script: auto
+
+  - url: /
+    static_files: build/index.html
+    upload: build/index.html
+
+  - url: /
+    static_dir: build
+
+# Set environment to production when deploying
+env_variables:
+  # Next's only allowed values are production, development and test - use a custom one
+  NEXT_PUBLIC_NODE_ENV_CUSTOM: "staging"
+  # Server-Only Variables
+  PROD_PORT: "8080"
+  DEV_PORT: "3000"
+  # Client Side Variables, exposed by Next at buildtime
+  NEXT_PUBLIC_FONCII_API_ENDPOINT: "https://staging.api.foncii.com/"
+  NEXT_PUBLIC_FONCII_STAGING_AUTH_CODE: "beli"
+  NEXT_PUBLIC_FONCII_API_AUTH_TOKEN: "Bearer Y1dsSGRHRnNRakUyUlZKcGMxRnplR2d5WVVKNFQwRXdUWEZMTWpoblQxVnFTVWRLUTBGbFVGTnhkeTB0VlQxT1QxRlVNRU0xWTA1MmJqUkdUVmM0YUNwTVpIbGZNa1JJY2l0cmJRPT0="
+  NEXT_PUBLIC_FIREBASE_CONFIG_API_KEY: "AIzaSyAYLxAtLvOkUSscSwh5D1LAbN-QXaODaqU"
+  NEXT_PUBLIC_AMPLITUDE_API_KEY: "f3f0815b35b3c5d6ff2e37def1cd7e29"
+  NEXT_PUBLIC_MAPBOX_TOKEN: "pk.eyJ1IjoieW91c3NlZjE3IiwiYSI6ImNsM3d5b29sZzBldmczaXF0OWk2ZjgxZG8ifQ.FhvLlvQlBEtz3dJrUKblUw"
+  NEXT_PUBLIC_INSTAGRAM_CLIENT_ID: "441821997622037"

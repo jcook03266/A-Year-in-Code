@@ -1,0 +1,9 @@
+mutation TrackUserEvent($input: TrackableUserEventTrackingInput) {
+  trackUserEvent(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

@@ -1,0 +1,3 @@
+query DoesUserHaveATasteProfile($userId: ID!) {
+  doesUserHaveATasteProfile(userID: $userId)
+}

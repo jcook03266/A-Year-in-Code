@@ -1,0 +1,15 @@
+query GetUserTasteProfile($userId: ID!) {
+  getUserTasteProfile(userID: $userId) {
+    id
+    adventureLevel
+    restaurantRatingImportanceLevel
+    distancePreferenceLevel
+    prefersDrinks
+    favoriteCuisines
+    foodRestrictions
+    preferredPriceLevels
+    preferredMealTypes
+    creationDate
+    lastUpdated
+  }
+}

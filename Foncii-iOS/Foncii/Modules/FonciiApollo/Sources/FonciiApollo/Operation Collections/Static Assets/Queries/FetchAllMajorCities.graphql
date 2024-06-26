@@ -1,0 +1,7 @@
+query FetchAllMajorCities {
+  fetchAllMajorCities {
+    id
+    name
+    abbreviatedState
+  }
+}

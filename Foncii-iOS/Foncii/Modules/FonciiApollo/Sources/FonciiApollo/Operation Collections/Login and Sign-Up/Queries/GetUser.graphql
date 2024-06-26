@@ -1,0 +1,23 @@
+query GetUser($userId: ID!) {
+  getUser(userID: $userId) {
+    id
+    fullName
+    username
+    email
+    phoneNumber
+    authProviders
+    profilePictureURL
+    isPhoneNumberVerified
+    creationDate
+    lastUpdated
+    notificationsEnabled
+    profileTasks {
+      id
+      isComplete
+    }
+    referralCode
+    firstFavorites {
+      id
+    }
+  }
+}

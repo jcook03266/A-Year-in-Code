@@ -1,0 +1,9 @@
+mutation AggregateRestaurantsAround($input: AggregateRestaurantsAroundInput) {
+  aggregateRestaurantsAround(input: $input) {
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}

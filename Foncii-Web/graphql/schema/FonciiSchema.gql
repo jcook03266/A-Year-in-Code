@@ -1,0 +1,2655 @@
+directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"""
+Allows for individual 'pages' of data to be returned with a specified
+number of elements returned per page (limit), as well as a sort order 'ascending or descending'
+[Not Used]
+"""
+input CursorPaginationInput {
+  paginationCursor: ID
+  limit: Int
+  sortOrder: SortOrders
+}
+
+"""
+Paginates a list of results based on the specified page, limit,
+sort key, and sort order parameters to ensure each following page is
+successive of the previous page.
+"""
+input PaginationInput {
+  limit: Int! = 100
+  page: Int! = 0
+  sortKey: String
+  sortOrder: SortOrders
+}
+
+type MajorCity {
+  id: ID!
+  name: String!
+  state: String!
+  abbreviatedState: String!
+}
+
+type DietaryRestriction {
+  id: ID!
+  localizedNames: SupportedLocalizations!
+  imageURL: String!
+}
+
+type Cuisine {
+  id: ID!
+  localizedNames: SupportedLocalizations!
+  imageURL: String!
+}
+
+type MealType {
+  id: ID!
+  localizedNames: SupportedLocalizations!
+}
+
+"""
+Follows the language codes defined in the localizations data model
+Keep both synchronized
+"""
+type SupportedLocalizations {
+  """
+  English is the default language therefore it's required, other languages are optionally supported
+  """
+  en: String!
+  es: String
+  fr: String
+}
+
+type Query {
+  """Returns a non-paginated full list of all supported cuisines"""
+  fetchAllCuisines: [Cuisine!]!
+
+  """Returns a non-paginated full list of all supported food restrictions"""
+  fetchAllDietaryRestrictions: [DietaryRestriction!]!
+
+  """Returns a non-paginated full list of all supported meal types"""
+  fetchAllMealTypes: [MealType!]!
+
+  """Returns a non-paginated full list of all supported major cities"""
+  fetchAllMajorCities: [MajorCity!]!
+
+  """
+  Lists the integer amount representing the total amount of restaurants stored by our database
+  """
+  getTotalRestaurantCount: Int!
+
+  """
+  Compute and return the percentage match for the given user and restaurant
+  """
+  getPercentageMatch(userID: ID!, restaurantID: ID!): Float
+
+  """
+  Compute and return the average percentage match for the users listed and the restaurant in question
+  Used for DWF, map feature via sorting the fetch restaurants by a map of averaged percentage matches for the current group of friends
+  """
+  getAverageGroupPercentageMatch(userIDs: [ID!]!, restaurantID: ID!): Float
+
+  """
+  Finds and returns the Foncii restaurant data associated with the given ID, and its various computed properties
+  """
+  getFonciiRestaurantByID(id: ID!, userPersonalizationInput: UserPersonalizationInput): FonciiRestaurant
+
+  """
+  Advanced search using semantic or geospatial search to find restaurants within the given search area that also match
+  the text search query and any additional properties to filter the results by. Returns denormalized foncii restaurants with
+  creator, post, and restaurant data attached from the appropriate database aggregation pipelines.
+  """
+  fonciiRestaurantSearch(input: FonciiRestaurantSearchInput!): FonciiRestaurantSearchOutput!
+
+  """
+  Used to refresh reservation availabilities for a given restaurant when the user is in the detail view of a restaurant / post.
+  This is used to ensure that the reservation availability data is up-to-date and accurate when the user is viewing the time table.
+  """
+  findReservationAvailabilitiesFor(fonciiRestaurantID: ID!, reservationSearchInput: ReservationSearchInput!): [ReservationAvailability!]!
+
+  """
+  Used to find the days that are available for reservation used in the calendar rendering and next available table day
+  """
+  findAvailableReservationDaysFor(fonciiRestaurantID: ID!, availableReservationDaysInput: AvailableReservationDaysInput!): AvailableReservationDays
+
+  """
+  A standalone operation for querying article publications outside of Foncii Restaurant based resolvers.
+  """
+  findAssociatedArticlesFor(restaurantID: String!): ArticlePublicationStandaloneOutput!
+
+  """
+  A standalone operation for querying restuarant awards outside of Foncii Restaurant based resolvers.
+  """
+  findAssociatedRestaurantAwardsFor(restaurantID: String!): RestaurantAwardStandaloneOutput!
+
+  """
+  Returns a list of posts that are directly associated with the given restaurant if the restaurant
+  exists. A list of post IDs to exclude from the query is also allowed to avoid returning unwanted edges.
+  """
+  findAssociatedPostsFor(fonciiRestaurantID: ID!, creatorID: ID, postsToExclude: [ID!]): [FMUserPost!]!
+
+  """
+  Provides a list of user post auto-complete suggestions for the target user's gallery. Note: No popular search terms
+  are injectable for user galleries at this time, but this feature may be added in the future with a simple addition to
+  the existing resolver code.
+  """
+  gallerySearchAutoCompleteSuggestions(input: GallerySearchAutoCompleteSuggestionsInput!): [UserPostAutoCompleteSuggestion!]!
+
+  """
+  Queries our restaurant database to find the Foncii restaurant that best matches the given query (if possible), and returns the
+  google Place ID associated with it. If no match can be found from our database then we use the Google Places autocomplete functionality
+  to find it the best we can return the best result from that strategy (again, if possible). The Google Places is a fallback method
+  in this situation since this is designed to lean on our own data for cost purposes. As an extra step for cost mitigation the google places
+  fetch can be turned off entirely such that only our database is used to search and return the best possible candidate.
+  
+  Note: useGoogleFallback is set to 'True' by default if not given.
+  """
+  findGooglePlaceIDForPlaceSearchQuery(searchQuery: String!, useGoogleFallback: Boolean): PlaceSearchOutput
+
+  """
+  Queries our restaurant database and Google's place API for auto-complete suggestions for the given search query.
+  This is used by users when selecting their favorite restaurants when first auto-generating their taste profile,
+  and also when a user is associating a restaurant with their post. This is a much more efficient and secure
+  approach to accessing the auto-complete suggestions endpoint as client side requests can be easily abused with
+  no control on our end.
+  """
+  restaurantAutoCompleteSuggestions(input: RestaurantAutoCompleteSuggestionsInput!): [RestaurantAutoCompleteSuggestion!]!
+
+  """
+  Provides a list of auto-complete suggestions for restaurants / users / popular search terms based on the given search query.
+  The auto-complete suggestions in the list are injected from multiple sources (Foncii's own database as well as Google's places API),
+  and these origins are also enumerated in the returned data to keep track of where the suggestion is coming from.
+  This is used by users when selecting their favorite restaurants when first auto-generating their taste profile,
+  specifically the search bar's autocomplete drop down menu where the user can select a restaurant directly and then
+  trigger the full search for restaurants based on the selected auto-complete suggestion.
+  """
+  exploreSearchAutoCompleteSuggestions(input: ExploreSearchAutoCompleteSuggestionsInput!): [ExploreSearchAutoCompleteSuggestion!]!
+
+  """
+  Finds and returns a list of restaurants that are similar to the given restaurant ID via ANN vector embedding search.
+  """
+  findRestaurantsSimilarTo(restaurantID: ID!): [FonciiRestaurant!]!
+
+  """
+  Returns a list of saved restaurants for the given user. Note: This is a list of restaurants that are saved by the user,
+  not the posts that the user has saved. Any saved restaurants that were saved from a user post also have the ID of the post
+  the save was made from.
+  """
+  getSavedRestaurantsFor(input: GetSavedRestaurantsForInput!): [FonciiRestaurant!]!
+
+  """
+  Returns a list of all restaurants up to the specified limit.
+  Provide pageIndex to skip a specific amount of pages when
+  paginating. So +1 to go to the next page of results and so on.
+  +1 with a limit of 10,000 would return the next 10,000. 20,000 in total
+  but the first 10,000 was skipped due to the +1 page index
+  """
+  getAllRestaurants(limit: Int!, pageIndex: Int): [Restaurant!]!
+  doesUsernameExistFM(username: String!): Boolean!
+  doesEmailExistFM(email: String!): Boolean!
+  doesPhoneNumberExistFM(phoneNumber: String!): Boolean!
+
+  """
+  Fetches all integration credentials for a given user ID, and optionally automatically
+  refreshes the fetched credentials that are marked for auto-refresh.
+  """
+  getUserIntegrationCredentials(userID: ID!): [FMIntegrationCredential!]!
+
+  """
+  Fetches the specific integration credential associated with the given user ID and integration
+  provider, and automatically refreshes the credential if it's marked for auto-refresh.
+  """
+  getIntegrationCredentialForUser(input: integrationCredentialForUserInput!): FMIntegrationCredential
+
+  """
+  Fetches the user's email from various associated attributes | used for fetching the user's email in order to enable dynamic login using username and phone number
+  via firebase auth, which both boil down to email + password login, OTP is an option, but it's not going to be supported right now beyond one time verification on sign up
+  """
+  getUserEmailFromUsernameFM(username: String!): String
+  getUserEmailFromPhoneNumberFM(phoneNumber: String!): String
+  findUserByIDFM(userID: ID!): FMUser
+  findUserByUsernameFM(username: String!): FMUser
+  findTasteProfilesForUser(userID: ID!): [TasteProfile!]
+  doesUserHaveATasteProfile(userID: ID!): Boolean!
+  getPrimaryUserTasteProfile(userID: ID!): TasteProfile
+  getTasteProfile(id: ID!): TasteProfile
+
+  """
+  Computes similarity score between the two users with the given IDs if both
+  have a valid primary taste profile associated with their account. Null if no
+  taste profiles exist for either.
+  """
+  computeTasteProfileSimilarity(userID1: ID!, userID2: ID!): Float
+
+  """
+  Returns a list of all users up to the specified limit.
+  Provide pageIndex to skip a specific amount of pages when
+  paginating. So +1 to go to the next page of results and so on.
+  +1 with a limit of 10,000 would return the next 10,000. 20,000 in total
+  but the first 10,000 was skipped due to the +1 page index
+  """
+  getAllUsers(limit: Int!, pageIndex: Int): [FMUser!]!
+
+  """
+  Fetches public posts made by the user with the specified username (if any) | For populating visited post galleries
+  """
+  findPublicPostsByUsername(username: String!, fonciiPostFilterInput: FonciiPostFilterInput, fonciiRestaurantSearchFilterInput: FonciiRestaurantSearchFilterInput, userPersonalizationInput: UserPersonalizationInput, paginationInput: PaginationInput!): UserPostGalleryOutput!
+
+  """
+  Fetches all posts (visible and hidden) made by the user with the specified user ID | For populating author galleries
+  """
+  findAllPostsByUserID(userID: String!, fonciiRestaurantSearchFilterInput: FonciiRestaurantSearchFilterInput, userPersonalizationInput: UserPersonalizationInput, paginationInput: PaginationInput!): UserPostGalleryOutput!
+
+  """
+  Queries a single post using the provided post ID, used for detail views to fetch isolated data when sharing links
+  """
+  findPostByID(postID: String!): FMUserPost
+
+  """Returns a list of all posts marked for deletion"""
+  getAllPostsMarkedForDeletion: [FMUserPost!]!
+
+  """
+  Advanced search using full-text and geospatial search to find public posts within the given search area that also match
+  the text search query and any additional properties to filter the results by. Returns denormalized posts with
+  creator and restaurant data attached from the appropriate database aggregation pipelines. Note: Posts returned by
+  this query are implicitly public because they have restaurant data which is used by the geospatial search pipeline.
+  
+  Note: This was previously used for the explore page, but is no longer in use, so it doesn't support percent match etc.
+  """
+  searchForPosts(input: FullTextGeospatialPostSearchInput!, fonciiRestaurantSearchFilterInput: FonciiRestaurantSearchFilterInput, userPersonalizationInput: UserPersonalizationInput): [FMUserPost!]!
+
+  """
+  Provisions all the necessary components for creating an HTML preview for a user's gallery including
+  description, title, keywords, and an applicable thumbnail image. A clean, fast and optimized way of generating better SEO#
+  through SSR (server-side rendering)
+  """
+  getUserGalleryHTMLMetadata(username: String!): HTMLMetadataResponse
+
+  """
+  Simplifies adding custom tags to user posts by suggesting tags that match
+  what they're typing in real time, like when you're typing a hashtag on IG or other social medias
+  """
+  userTagAutoCompleteSuggestions(searchQuery: String!): [String!]!
+
+  """Returns the most commonly used tags amongst users"""
+  fetchPopularUserTags: [String!]!
+
+  """
+  Returns the computed influencer map leaderboard for the given area of interest
+  """
+  fetchLocalInfluencerLeaderboard(input: LocalInfluencerLeaderboardInput): [LocalInfluencerLeaderboardEntry!]!
+
+  """
+  Returns a list of all users up to the specified limit.
+  Provide pageIndex to skip a specific amount of pages when
+  paginating. So +1 to go to the next page of results and so on.
+  +1 with a limit of 10,000 would return the next 10,000. 20,000 in total
+  but the first 10,000 was skipped due to the +1 page index
+  """
+  getAllPublicPosts(limit: Int!, pageIndex: Int): [FMUserPost!]!
+
+  """
+  Returns a combination of analytics metrics specific to the user's map. Note: If the timespan
+  selected is older than the user's account then null is returned as the request is invalid and won't
+  return valid data.
+  """
+  fetchUserMapAnalyticsDashboard(input: UserAnalyticsDashboardInput!): UserMapAnalyticsDashboard
+  fetchUserBusinessWebsiteAnalyticsDashboard(input: UserAnalyticsDashboardInput!): UserBusinessWebsiteAnalyticsDashboard
+  fetchUserReservationsIntentsAnalyticsDashboard(input: UserAnalyticsDashboardInput!): UserReservationIntentsAnalyticsDashboard
+  isAccountClaimed(input: isAccountClaimedInput!): Boolean!
+  getUserSessionByID(sessionID: ID!): UserSession
+  getCurrentSessionForUserWithID(userID: ID!): UserSession
+  getCurrentSessionForDeviceWithID(deviceID: ID!): UserSession
+  getAllSessionsForUserWithID(userID: ID!): [UserSession!]!
+  getAllSessionsForDeviceWithID(userID: ID!): [UserSession!]!
+  getAllDeviceSessionsForUser(userID: ID!, deviceID: ID!): [UserSession!]!
+  getAllAliveUserSessions: [UserSession!]!
+  getAllActiveUserSessions: [UserSession!]!
+}
+
+"""
+Used when fetching trending restaurants
+This restaurant type returns with a computed set of trending attributes
+"""
+type TrendingRestaurant implements Identifiable {
+  id: ID!
+  restaurant: FonciiRestaurant!
+  rank: Int!
+  impressions: Int!
+}
+
+type FonciiRestaurant {
+  """
+  Foncii restaurant data aggregated, pre-processed, and post-processed from various sources
+  external sources.
+  """
+  restaurant: Restaurant!
+
+  """
+  Average rating for this restaurant across the Foncii Maps platform (null if no ratings yet)
+  """
+  averageFonciiRating: Float
+
+  """
+  [Computed] True if the restaurant is currently open using UTC offset time, false if it's not open, and null if this 
+  can't be computed ~ missing UTC offset time
+  """
+  isOpen: Boolean
+
+  """
+  [Computed] A list of fresh time slots (availabilities) directly from the reservation provider(s) 
+  connected to the restaurant's reservation integration (if any). An empty list if no availabilities 
+  are present from any of the connected providers, or if a reservation integration does not exist
+  for the restaurant yet.
+  """
+  reservationAvailabilityEdges(userPersonalizationInput: UserPersonalizationInput): [ReservationAvailability!]!
+
+  """
+  [Computed] True if there are reservations available for target time frame (desired time frame passed
+  into resolver), false otherwise and also when the restaurant doesn't have a reservation integration yet.
+  """
+  reservationsAvailable(userPersonalizationInput: UserPersonalizationInput): Boolean!
+
+  """
+  [Computed] True if the restaurant has a supported reservation integration connected to it, false otherwise.
+  """
+  isReservable: Boolean!
+
+  """
+  [Computed] The percent match score for a single user, namely the primary user conducting the query.
+  Only available for registered users.
+  """
+  percentMatchScore(userPersonalizationInput: UserPersonalizationInput): Float
+  averagePercentMatchScore(userIDs: [ID!], coordinates: CoordinatePointInput): Float
+
+  """
+  [Computed] A metric representing the quality of the restaurant itself. This is 
+  essentially half of the percent match score; it's only missing the user taste profile component
+  from the recommendation score. This can be used to sort restaurants based on quality 
+  for users that don't have an account yet, a preview to percent match if you will.
+  """
+  qualityScore: Float!
+
+  """
+  [Computed] Influencer insights / Foncii Maps user posts that are directly tied to / associated with this restaurant. 
+  This differs from 'associatedPostEdges' in the sense that only posts by users with notes or ratings for the given restaurant
+  are returned. Limited to 10
+  """
+  influencerInsightEdges(postsToExclude: [ID!]): [FMUserPost!]!
+
+  """
+  [Computed] Foncii Maps user posts that are directly tied to / associated with this restaurant. Limited to 10
+  """
+  associatedPostEdges(postsToExclude: [ID!]): [FMUserPost!]!
+
+  """
+  [Computed] Aggregated articles that mention this restaurant by name. Limited to 10 (Update when needed)
+  """
+  associatedArticlePublicationEdges: [ArticlePublication!]!
+
+  """
+  [Computed] Aggregated articles that mention this restaurant by name. Limited to 10 (Update when needed)
+  """
+  associatedRestaurantAwardEdges: [RestaurantAward!]!
+
+  """True if the restaurant was saved by the target user, false otherwise"""
+  isSaved(userPersonalizationInput: UserPersonalizationInput): Boolean!
+}
+
+type ArticlePublication implements Identifiable & Publication {
+  """
+  Hashed combination of the url and referenced venue name to keep it unique and deterministic
+  """
+  id: ID!
+
+  """The title of the online article publication"""
+  title: String!
+
+  """
+  The url of the article that was scraped, links users back to the source when they click on it in the client
+  Meta tags from the article are pulled from the URL (page title etc)
+  """
+  url: String!
+
+  """
+  [Computed] The domain name of the website provided by the article's URL
+  """
+  websiteDomain: String!
+
+  """
+  [Computed] The favicon for the website (may not exist, depends on the website) but usually located at 'example.com/favicon.ico', uses the parsed web domain
+  """
+  faviconLink: String!
+
+  """
+  The description meta tag of the article's web page loaded and parsed by this server (can't be done client side due to cross site blocks)
+  """
+  description: String
+
+  """
+  Name of the restaurant or bar the article directly references, used in the backend to search for articles by restaurant name
+  """
+  venueName: String!
+
+  """The publication this article was published on (i.e Timeout Eater etc.)"""
+  publication: String!
+
+  """
+  When the article was first published in ISO-8601 format (ex. 2023-11-19)
+  """
+  publishDate: String!
+
+  """The time when this article was scraped by our bot"""
+  scrapeDate: String!
+
+  """
+  City associated with the publication, in case no full address information is provided
+  """
+  city: String
+
+  """Optional restaurant address string in case provided by the article"""
+  address: String
+
+  """
+  Optional text content parsed from the article to store for this publication. Can be used for text embeddings
+  """
+  textContent: String
+}
+
+type RestaurantAward implements Identifiable {
+  id: ID!
+
+  """The title of the award"""
+  title: String!
+
+  """
+  The url of the award that was scraped, links users back to the source when they click on it in the client
+  Meta tags from the award are pulled from the URL (page title etc)
+  """
+  url: String!
+
+  """
+  [Computed] The domain name of the website provided by the article's URL
+  """
+  websiteDomain: String!
+
+  """
+  [Computed] The favicon for the website (may not exist, depends on the website) but usually located at 'example.com/favicon.ico', uses the parsed web domain
+  """
+  faviconLink: String!
+
+  """
+  The description meta tag of the awards's web page loaded and parsed by this server (can't be done client side due to cross site blocks)
+  """
+  description: String
+
+  """
+  Name of the restaurant or bar the article directly references, used in the backend to geocode to our restaurants 
+  """
+  venueName: String!
+
+  """
+  Location of the restaurant or bar the article directly references, used in the backend to geocode to our restaurants 
+  """
+  venueLocaiton: String!
+
+  """[Computed] Post geocoded retaurant ID """
+  restaurantID: String!
+
+  """
+  The organization this award was published on (i.e Michelin Guides etc.)
+  """
+  organization: String!
+
+  """
+  When the article was first published in ISO-8601 format (ex. 2023-11-19)
+  """
+  awardDate: String!
+
+  """The time when this award was scraped by our bot (or csv was ingested)"""
+  scrapeDate: String!
+}
+
+""" Object describing the timeslot when a reservation is presently available given the reservation search criteria 
+"""
+type ReservationAvailability {
+  """
+  The date / day of the availability formatted in ISO-8601 (ex. 2023-11-26T00:00:00.000Z)
+  """
+  date: String!
+
+  """
+  The time of the reservation.
+  Formatted as 24h time (ex. 22:00:00) hh:mm:ss
+  """
+  timeSlot: String!
+
+  """The provider of the reservatio (ex. Resy)"""
+  provider: ReservationProviders!
+
+  """The provider specific identifier for the restaurant in question """
+  venueID: String!
+  fonciiRestaurantID: String!
+
+  """
+  Generic link to the restaurant's detail page on the provider's platform (ex. https://resy.com/cities/ny/borrachito-taqueria-spirits) without parameters
+  """
+  externalURL: String!
+
+  """
+  A link to the reservation page which will be used to direct the user to their specified reservation time slot based on the party size and desired date
+  """
+  parameterizedLink: String!
+
+  """The time when this availability was last fetched from the provider"""
+  lastChecked: String!
+}
+
+""" Object describing the timeslot when a reservation is presently available given the reservation search criteria 
+"""
+type AvailableReservationDays {
+  """Days with availability"""
+  daysWithAvailability: [String!]!
+
+  """Provider dependent - will communicate when the last possible date is """
+  lastDayAvailable: String!
+
+  """The provider of the reservatio (ex. Resy)"""
+  provider: ReservationProviders!
+
+  """The provider specific identifier for the restaurant in question """
+  venueID: String!
+
+  """The time when this availability was last fetched from the provider"""
+  lastChecked: String!
+}
+
+type Restaurant implements Identifiable & Updatable & Expirable {
+  id: ID!
+  creationDate: String!
+  lastUpdated: String!
+  staleDate: String!
+  googleID: String!
+
+  """Nullable b/c Foncii Maps uses Google as a data anchor"""
+  yelpID: String
+  name: String!
+
+  """
+  Optional because some restaurants lack Yelp data + Google image collections, so we really can't source anything for them unless manually done.
+  """
+  heroImageURL: String
+  imageCollectionURLs: [String!]
+  description: String
+  categories: [String!]
+  priceLevel: Int!
+  phoneNumber: String
+  operatingHours: OperatingHours
+  servesAlcohol: Boolean!
+  website: String
+
+  """
+  Clean and decodable representation of this place's physical location. Sent back to the client.
+  A GeoJSON point object with exists only on the backend data for this restaurant to allow for geospatial queries.
+  """
+  coordinates: CoordinatePoint!
+  addressProperties: AddressProperties!
+  googleProperties: GoogleRestaurantProperties
+  yelpProperties: YelpRestaurantProperties
+
+  """
+  [Optional] This location's offset from UTC (in minutes), used to determine whether or not the restaurant is open relative to some time zone.
+  """
+  utcOffset: Int
+
+  """[Optional] Social media handles associated with this restaurant"""
+  socialMediaHandles: RestaurantSocialMediaHandles
+}
+
+"""
+An entity that signifies a user with the given user ID has saved
+the restaurant with the given restaurant ID, which is also optionally associated with some
+user post with the given post ID (if the restaurant was saved via a user post)
+"""
+type SavedFonciiRestaurant implements Savable {
+  id: ID!
+  userID: ID!
+  creationDate: String!
+
+  """ID of the foncii restaurant saved"""
+  fonciiRestaurantID: String!
+
+  """Optional post ID used when the restaurant was saved via a user post"""
+  postID: String
+}
+
+type RestaurantSocialMediaHandles {
+  instagram: String
+}
+
+type OperatingHours {
+  Monday: String
+  Tuesday: String
+  Wednesday: String
+  Thursday: String
+  Friday: String
+  Saturday: String
+  Sunday: String
+}
+
+type AddressProperties {
+  formattedAddress: String
+  streetAddress: String
+  zipCode: String
+  city: String
+  neighborhood: String
+  stateCode: String
+  countryCode: String
+}
+
+type GoogleRestaurantProperties implements PlaceProperties {
+  rating: Float
+  externalURL: String
+}
+
+type YelpRestaurantProperties implements PlaceProperties {
+  rating: Float
+  externalURL: String
+}
+
+type RestaurantAutoCompleteSuggestion implements AutoCompleteSuggestion {
+  """
+  Note: 'fonciiRestaurantID' is not available when injecting suggestions from Google Places API / when the Source is 'GOOGLE'
+  """
+  fonciiRestaurantID: ID
+  googlePlaceID: ID!
+  source: RestaurantAutoCompleteSuggestionSources!
+
+  """
+  Cuisines / other categories attributed to aggregated restaurants | Optional for non-aggregated restaurants
+  """
+  categories: [String!]
+  title: String!
+
+  """ Human-readable description [business name + location properties]  """
+  description: String!
+
+  """ Optional preview image for this search result """
+  previewImageURL: String
+}
+
+type UserPostAutoCompleteSuggestion implements AutoCompleteSuggestion {
+  postID: ID!
+  fonciiRestaurantID: ID!
+  title: String!
+
+  """ Human-readable description [business name + location properties]  """
+  description: String!
+
+  """ Optional preview image for this search result """
+  previewImageURL: String
+}
+
+type UserAutoCompleteSuggestion implements AutoCompleteSuggestion {
+  userID: ID!
+  title: String!
+
+  """ Human-readable description [username] """
+  description: String!
+
+  """ Optional preview image for this search result """
+  previewImageURL: String
+}
+
+type PopularSearchQuerySuggestion implements AutoCompleteSuggestion {
+  title: String!
+
+  """ Human-readable description [popular search term] """
+  description: String!
+
+  """ Not used for this type, just implemented for protocol conformance """
+  previewImageURL: String
+}
+
+type Mutation {
+  """
+  Locates restaurants around the given coordinate point, fetches data points from multiple external data providers
+  transforms the retrieved data, aggregates all the candidates from within the search area and pushes them
+  to our database where they're cached for ~ 3 months, and refreshed after that in order to ensure that up-to-date information is being displayed
+  A maximum of 50 restaurants are aggregated by this operation and returned as output for any external usage of the immediate data
+  Note: The limit is capped at 50 to reduce the time it takes to aggregate restaurant data to the database ~ 6 seconds vs ~ 12 seconds for 100 entries
+  """
+  aggregateRestaurantsAround(input: AggregateRestaurantsAroundInput): [Restaurant!]!
+
+  """
+  Method used to aggregate a singular restaurant based on the given input. This can be triggered by users
+  when they select a restaurant from a search bar's autocomplete drop down menu if the restaurant doesn't already exist in our
+  database.
+  """
+  aggregateRestaurant(input: AggregateRestaurantInput): Restaurant
+
+  """
+  Used to ingest aggregated reservation detail information from the reservation scraper
+  Matches reservation details to existing foncii restaurants and creates / updates reservation integrations
+  based on the ingested data. If a match doesn't exist within the database already then a match is
+  aggregated using our aggregation pipeline combined with Google place search.
+  """
+  ingestRestaurantReservationDetails(input: IngestRestaurantReservationDetailsInput): Boolean!
+
+  """
+  Ingests article data from the publication scrapers and stores them in our database for fast access
+  as these documents will be indexed as opposed to a federated approach with S3 which is much slower.
+  """
+  ingestArticlePublicationDetails(input: IngestArticlePublicationDetailsInput): Boolean!
+
+  """
+  Ingests award data from the award scrapers (or CSV) and stores them in our database for fast access
+  as these documents will be indexed as opposed to a federated approach with S3 which is much slower.
+  """
+  ingestRestaurantAwardDetails(input: IngestRestaurantAwardDetailsInput): Boolean!
+
+  """
+  Saves the target restaurant to the user's collection of saved restaurants (if not already present). Also
+  attributes the saved restaurant to a specific post if the restaurant was saved from a user post.
+  """
+  saveRestaurant(input: RestaurantSaveInput): Boolean!
+
+  """
+  Unsaves the target restaurant from the user's collection of saved restaurants (if present).
+  """
+  unsaveRestaurant(input: RestaurantSaveInput): Boolean!
+
+  """
+  Connects a new integration credential for the given user ID and integration provider if one doesn't already exist
+  or refreshes a prexisting one using the new input when a user chooses to manually refresh the credential.
+  Note: The backend tries to refresh this credential automatically when the user is active, manual refreshes are
+  up to the user and are required when the credential eventually expires.
+  """
+  connectIntegration(input: ConnectIntegrationInput!): FMIntegrationCredential
+
+  """
+  Allows the user to manually refresh the integration credential associated with the given
+  input (if the credential is mature ~ 24 hours or older)
+  """
+  refreshIntegration(input: integrationCredentialForUserInput!): FMIntegrationCredential
+
+  """
+  Revokes the target integration credential for the given user ID and integration provider,
+  effectively cutting off Foncii Maps' access to the user's data source until they reconnect the integration
+  """
+  revokeIntegrationCredential(userID: ID!, provider: FMIntegrationProviders!): Boolean!
+
+  """Revokes all integration credentials for the given user ID."""
+  revokeAllIntegrationCredentials(userID: ID!): Boolean!
+
+  """
+  Updates the auto refresh attribute associated with integration credentials to
+  be true if enabled, and false if disabled. This attribute controls the background behavior
+  associated with each credential (i.e whether or not to refresh the credential automatically)
+  """
+  setAutoRefreshStateForCredential(integrationCredentialID: ID!, autoRefreshEnabled: Boolean!): Boolean!
+
+  """
+  Creates the user with the given input and returns the created user if the operation was successful, null otherwise
+  """
+  createUserFM(input: CreateNewFMUserInput!): FMUser
+
+  """
+  Tracks a client based user login event, not actually responsible for signing a user in and generating an auth credential.
+  Returns the logged in user's data since this mutation is supposed to only be triggered when the user logs in successfully,
+  null if an error occurs for some external reason.
+  """
+  loginUserFM(input: UserLoginInput!): FMUser
+
+  """Endpoint for impersonating a user. Currently fetches the user object"""
+  fetchImpersonatedUserFM(input: ImpersonateUserInput!): FMUser
+
+  """
+  Tracks a Foncii Maps client based user sign out event, not responsible for physically signing a user out and revoking auth credentials
+  True if the operation was successful, false otherwise.
+  """
+  signOutUserFM(userID: ID!): Boolean!
+
+  """
+  Deletes the given FM User and all of their posts, erasing their digital footprint from our services excluding analytics
+  True if the operation was successful, false otherwise.
+  """
+  deleteUserFM(userID: ID!): Boolean!
+
+  """
+  Updates the user's map name given the new map name provided, an error is thrown if the map name is already taken or if the user doesn't exist
+  True if the operation was successful, false otherwise.
+  """
+  updateMapNameFM(input: UpdateFMUserMapNameInput!): Boolean!
+
+  """
+  Updates the user's email address with the given valid email address string, please run REGEX in the client before submitting email addresses,
+  REGEX is also ran here, but doing so on the client is good practice and allows the user to makes instant edits.
+  True if the operation was successful, false otherwise.
+  """
+  updateUserEmailFM(userID: ID!, email: String!): Boolean!
+  updateUserPhoneNumberFM(userID: ID!, phoneNumber: String!): Boolean!
+
+  """
+  True if the password update succeeded in the external auth system, false otherwise (hashes are the same)
+  """
+  updateUserPasswordFM(userID: ID!, password: String!): Boolean!
+
+  """
+  Uploads a universal Foncii profile picture to use across the different platform based on a single permalink,
+  or deletes the user's existing profile picture. A verbose error is thrown if the update fails for some reason,
+  so if the response is defined / true that means the update was successful.
+  """
+  setUserProfilePicture(input: SetUserProfilePictureInput!): Boolean!
+  createTasteProfile(tasteProfileInput: TasteProfileInput!): TasteProfile!
+  autoGenerateTasteProfile(userID: ID!, selectedRestaurantIDs: [ID!]!): TasteProfile!
+  generateDefaultTasteProfile(userID: ID!): TasteProfile!
+  updateTasteProfile(id: ID!, tasteProfileInput: TasteProfileInput!): Boolean!
+  deleteTasteProfile(id: ID!): Boolean!
+  deleteAllTasteProfilesForUser(userID: ID!): Boolean!
+  switchPrimaryUserTasteProfile(userID: ID!, tasteProfileID: ID!): Boolean!
+  removePrimaryUserTasteProfile(userID: ID!): Boolean!
+  ingestDiscoveredInstagramUser(input: DiscoveredInstagramUserInput!): FMUser
+
+  """
+  Marks the target user post for async deletion from the database alongside its corresponding media from the cloud storage bucket. Any child posts
+  will still be attached to the parent post in a many-to-one relationship, even if the parent post is deleted.
+  """
+  deletePost(input: UpdateFMUserPostUserInput!): Boolean!
+
+  """
+  Forcibly deletes the post and skips over the allotted 30 day grace period for the user to choose to
+  undo deletion of their post. Note: This is only for posts marked for deletion by the user that haven't already been deleted yet.
+  """
+  forceDeletePost(input: UpdateFMUserPostUserInput!): Boolean!
+
+  """
+  Unmarks the post for deletion. Note: This is only for posts marked for deletion by the user that haven't already been deleted yet.
+  """
+  undeletePost(input: UpdateFMUserPostUserInput!): Boolean!
+
+  """
+  Copy and create a new post from another post's attributes. The parent post is referenced by the child via ID
+  and any children of the child automatically become children of the parent post in a many-to-one relationship.
+  """
+  duplicatePost(sourcePostID: ID!): FMUserPost
+
+  """
+  Imports the user's posts using the target Foncii Maps integration.
+  Returns true if the import process succeeded, and false if it doesn't / throws
+  
+  input:
+  integrationCredentialID: ID! // ID of the integration credential to use for importing posts
+  straddleImport?: boolean, // True if all supported import methods should be used (ex.) Basic Display + Scraper), true by default
+  classifyPosts?: boolean, // True if posts should be automatically classified, false otherwise, true by default
+  isFirstImport?: boolean, // // True if the user just created their account and are importing posts for the first time, false by default
+  """
+  importPosts(input: ImportPostsInput!): Boolean!
+
+  """
+  Marks the post as favorited or not favorited
+  True if the operation was successful, false otherwise.
+  """
+  updatePostFavoriteState(input: UpdateFMUserPostFavoriteStateInput!): Boolean
+
+  """
+  Updates the post's restaurant data by adding corresponding Google and Yelp data by using Google Autocomplete as a data anchor
+  """
+  updatePostRestaurantData(input: UpdateFMUserPostRestaurantDataInput!): FMUserPost
+
+  """
+  Updates the post's custom user properties all at once to keep parity between the individual properties
+  """
+  updatePostCustomUserProperties(input: UpdateFMUserPostCustomUserPropertiesInput!): FMUserPost
+
+  """
+  Updates the post's media information with the provided media URL and type. Note: This is only for
+  media uploaded through the client to the Foncii CDN. Do not pass in a URL that points to an object
+  that's not of the supported type and or is not hosted in the Foncii CDN storage bucket.
+  """
+  updatePostMedia(input: UpdateFMUserPostMediaInput!): FMUserPost
+
+  """
+  Creates a new Foncii Maps user post for the user with provided ID. After being created the
+  user can simply update their post with the information they wish including a custom image or video
+  to be displayed. The post will be hidden until they upload the appropriate media to accompany the post.
+  """
+  createUserPost(input: CreateFMUserPostInput!): FMUserPost
+
+  """
+  Processes aggregated posts from Instagram that are also classified with Google Place IDs and
+  ingests them into the Foncii ecosystem if they don't already exist within. For those that already
+  exist they're simply updated with the new data (if any). And any pending or new media that should be
+  uploaded are also handled. Note: This is used for the automatic post import functionality such that users
+  essentially won't have to touch their map at all (ideally).
+  """
+  ingestClassifiedDiscoveredInstagramPosts(input: ClassifiedDiscoveredInstagramPostsInput): [FMUserPost!]!
+
+  """
+  Processes aggregated posts from Instagram and ingests them into the Foncii ecosystem if they don't
+  already exist within. For those that already exist they're simply updated with the new data (if any).
+  And any pending or new media that should be uploaded are also handled.
+  """
+  ingestDiscoveredInstagramPosts(input: DiscoveredInstagramPostsInput): [FMUserPost!]!
+  trackFonciiEvent(input: FonciiAnalyticsEventInput!): Boolean!
+  trackFonciiBizEvent(input: FonciiBizAnalyticsEventInput!): Boolean!
+
+  """
+  Creates a new session for the user with the given information
+  and returns a session ID if the session was created successfully,
+  and null if a new session could not be created at this time.
+  """
+  createUserSession(input: CreateUserSessionInput): UserSession
+
+  """
+  Keeps the user session alive by sending a periodic heart beat
+  from the client here to the server. If a heart beat isn't received within
+  a certain period of time the session is assumed to be not alive anymore.
+  When the user tries to send a new heart beat for an unalive session
+  the dead session is retired and a new one is created represented by the
+  ID output. If the input is invalid and a session does not exist for the given
+  ID
+  """
+  sendUserSessionHeartBeat(input: UserSessionHeartBeatInput): UserSession
+
+  """
+  Marks the user session as terminated when the user closes their
+  client or logs out. User sessions that die out due to lack of heart
+  beat are not marked as terminated.
+  """
+  endUserSession(sessionID: ID!): Boolean!
+}
+
+input GetSavedRestaurantsForInput {
+  userPersonalizationInput: UserPersonalizationInput!
+
+  """The index of the current pagination page"""
+  paginationPageIndex: Int! = 0
+
+  """
+  The amount of saved restaurants to return, this will
+  also be used client side to determine the pagination offset and
+  next page index based on the amount of items returned.
+  """
+  resultsPerPage: Int!
+}
+
+input RestaurantSaveInput {
+  userID: ID!
+  fonciiRestaurantID: ID!
+
+  """
+  Optional post id included when a user saves or unsaves a restaurant from a user post
+  """
+  postID: ID
+}
+
+input RestaurantAutoCompleteSuggestionsInput {
+  searchQuery: String! = ""
+  injectExternalSuggestions: Boolean = false
+}
+
+input GallerySearchAutoCompleteSuggestionsInput {
+  galleryAuthorID: String!
+  searchQuery: String! = ""
+}
+
+input ExploreSearchAutoCompleteSuggestionsInput {
+  searchQuery: String! = ""
+  injectExternalSuggestions: Boolean = false
+
+  """
+  True if public user post suggestions should be included in the suggestions, false otherwise
+  """
+  includeUserPostSuggestions: Boolean = false
+
+  """
+  True if user suggestions should be included in the suggestions, false otherwise
+  """
+  includeUserSuggestions: Boolean = false
+
+  """
+  Relevant popular search terms based on analytics [Not used for now, need to setup amplitude pipeline + need more data too]
+  """
+  includePopularSearchTerms: Boolean = false
+}
+
+input FonciiRestaurantSearchInput {
+  userPersonalizationInput: UserPersonalizationInput!
+  searchQuery: String! = ""
+  searchRadius: Float!
+  coordinates: CoordinatePointInput!
+
+  """Allows client side filters to be applied to the search process"""
+  fonciiRestaurantSearchFilterInput: FonciiRestaurantSearchFilterInput
+}
+
+input ReservationSearchInput {
+  """Size of the party from [min] 1 - 20 [max]"""
+  partySize: Int!
+
+  """
+  ISO-8601 formatted date string in the format of YYYY-mm-dd ex.) 2023-12-02
+  """
+  targetDate: String!
+}
+
+input AvailableReservationDaysInput {
+  """Size of the party from [min] 1 - 20 [max]"""
+  partySize: Int!
+
+  """
+  ISO-8601 formatted date string in the format of YYYY-mm-dd ex.) 2023-12-02
+  """
+  startDate: String!
+
+  """
+  ISO-8601 formatted date string in the format of YYYY-mm-dd ex.) 2023-12-02
+  """
+  endDate: String!
+}
+
+input FonciiPostFilterInput {
+  """
+  Groups posts by restaurant with latest post, as determined by creation date
+  """
+  latestByRestaurant: Boolean
+}
+
+input FonciiRestaurantSearchFilterInput {
+  """Only return restaurants that are currently available for reservation"""
+  reservableOnly: Boolean! = false
+}
+
+"""
+Input for dynamically aggregating and transforming restaurant data around a specified coordinate point from multiple data sources
+"""
+input AggregateRestaurantsAroundInput {
+  coordinates: CoordinatePointInput!
+}
+
+input AggregateRestaurantInput {
+  googlePlaceID: String!
+}
+
+input IngestRestaurantReservationDetailsInput {
+  provider: ReservationProviders
+  restaurantReservationDetails: [RestaurantReservationDetailInput!]!
+}
+
+input IngestArticlePublicationDetailsInput {
+  articlePublicationDetails: [ArticlePublicationDetailInput!]!
+}
+
+input IngestRestaurantAwardDetailsInput {
+  restaurantAwardDetails: [RestaurantAwardDetailInput!]!
+}
+
+"""Foncii Maps User"""
+type FMUser implements UserAccount & Identifiable & Updatable {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  username: String!
+  phoneNumber: String
+  email: String!
+  authProviders: [AuthProviders!]!
+  profilePictureURL: String
+
+  """
+  False if a person still needs to claim an autogenerated account, true otherwise.
+  Used to trigger the onboarding flow for new users that are just getting access to their unclaimed account.
+  """
+  isClaimed: Boolean!
+  creationDate: String!
+  lastUpdated: String!
+  referralCode: String!
+  lastLogin: UserLogin!
+  lastSignOut: String
+  isLoggedIn: Boolean!
+  role: UserRoles!
+  mapName: String!
+
+  """
+  [Computed] User's primary taste profile's data (if they have a current taste profile or any taste profile for that matter)
+  Null until they create one / if they've deleted all of their existing taste profiles
+  """
+  primaryTasteProfile: TasteProfile
+
+  """[Computed] All of the target user's taste profiles as edges (an array)"""
+  tasteProfileEdges: [TasteProfile!]!
+
+  """
+  [Computed] Score from 0 - 100 that measures the similarity between the primary user and the
+  secondary user in terms of their taste profiles using the generated embeddings that reside within
+  the taste profile's data model as well as in the database.
+  """
+  tasteProfileSimilarityScore(userToCompare: ID): Float
+
+  """
+  [Computed] various profile tasks for the user to complete. These are computed and resolved at request
+  time and aren't tied to an updatable state in the DB because some of these tasks can be undone by the user
+  so it's important to keep track of their dynamic states without overcomplicating other services and parts of the user ecosystem.
+  """
+  profileTasks: [ProfileTask!]!
+}
+
+type FMIntegrationCredential implements Identifiable & Updatable & Expirable {
+  id: ID!
+  creationDate: String!
+  lastUpdated: String!
+  staleDate: String!
+
+  """Foncii User ID used to fetch this integration credential"""
+  userID: String!
+  provider: FMIntegrationProviders!
+
+  """App-scoped user identifier"""
+  appUID: String!
+
+  """User's platform specific username provided by the integration (if any)"""
+  appUsername: String
+
+  """
+  Some expirable access token, either short lived or long lived depending on the integration
+  """
+  accessToken: String!
+
+  """
+  When enabled the auth token is automatically refreshed when the user starts a new session,
+  (if the token needs to be refreshed in the first place). Default is true.
+  This is so we don't waste operations on users that don't log in for extended periods of time, plus
+  it's bad practice to persist auth tokens indefinitely without some input / interaction from the user.
+  """
+  autoRefresh: Boolean!
+
+  """
+  The timestamp when the user's last import occurred. This is undefined when
+  the credential is first provisioned, and updated upon successful imports.
+  ISO-8601 formatted date string
+  """
+  lastImport: String
+
+  """
+  True if the credential expires within the next 3 days or so, false otherwise.
+  Three days is our arbitrary grace period for the user to manually refresh the credential
+  or mark it as auto-refreshable, but this can change as needed.
+  """
+  expiresSoon: Boolean!
+
+  """
+  True the credential is now older than its expiration date and cannot be refreshed. The user must
+  now reconnect the credential in order to use it again, they can also remove it from their existing
+  credentials by revoking it from the client side in case they no longer need to use the integration.
+  """
+  expired: Boolean!
+
+  """
+  True if the credential is old enough to be refreshed (~ 24 hours or older),
+  false otherwise.
+  """
+  canRefresh: Boolean!
+}
+
+type UserReferral implements Identifiable & Updatable {
+  id: ID!
+  creationDate: String!
+  lastUpdated: String!
+  referrerCode: String!
+  refereeCode: String!
+}
+
+"""User Taste Profile"""
+type TasteProfile implements Identifiable & Updatable {
+  """
+  UID of this taste profile, a single user can have multiple taste profiles
+  associated with their account via the userID field
+  """
+  id: ID!
+
+  """
+  ID of the user this taste profile belongs to, before this was the id, but this will allow for the possibility of switching taste profiles for users by allowing multiple taste profiles for a single user
+  """
+  userID: String!
+  creationDate: String!
+  lastUpdated: String!
+
+  """
+  0 - 2 | Optional integer from 0 - 2 - default value if undefined if no value is given
+  """
+  spicePreferenceLevel: Int
+
+  """0 - 2 | ~"""
+  adventureLevel: Int
+
+  """0 - 2 | ~"""
+  distancePreferenceLevel: Int
+
+  """
+  0 - 3 | Optional integer from 0 - 3 - default value is undefined if no value is given
+  """
+  diningPurpose: Int
+
+  """0 - 3 | ~"""
+  ambiancePreference: Int
+
+  """
+  0 - 3 | Optional integer from 0 - 3 - default value if undefined if no value is given, Option 4 aka 'Non-alcoholic beverages only' indicates a non-alcoholic beverage preference i.e no alcohol, the others ~ yes alcohol
+  """
+  drinkPreference: Int
+
+  """A set of unique cuisine IDs, (any duplicates are removed)"""
+  preferredCuisines: [ID!]
+
+  """
+  A set of unique ID strings associated with the dietary restrictions that the user has - default value is an empty array if no value is given
+  """
+  dietaryRestrictions: [ID!]
+
+  """
+  0 - 3 | Optional integer from 0 - 3 - default value is undefined if no value is given | 0.) 4 ($$$$) and below ($$$$), ($$$), ($$), ($) 1.) 3 ($$$) and below ($$$), ($$), ($) 2.) ($$) and below ($$), ($), 1.) ($) and below ($)
+  """
+  preferredPriceRange: Int
+}
+
+input UserPersonalizationInput {
+  """
+  Optional personalization criteria to apply when resolving the Foncii restaurant
+  for attributes such as percent match and reservations
+  """
+  userID: ID
+  coordinates: CoordinatePointInput!
+
+  """
+  Optional search criteria for reservations, if not provided then
+  the default reservation search criteria is used (party of 2, target date is today)
+  """
+  reservationSearchInput: ReservationSearchInput
+  includeReservations: Boolean = false
+  includeInfluencerInsights: Boolean = false
+  includeAssociatedPosts: Boolean = false
+  includeAssociatedArticles: Boolean = false
+  includeAssociatedRestaurantAwards: Boolean = false
+}
+
+input RestaurantReservationDetailInput {
+  name: String!
+  venueID: String!
+  venueAlias: String!
+
+  """
+  A link to the reservation page which will be used to direct the user to their specified reservation time slot
+  """
+  externalURL: String!
+
+  """
+  CSV string with the restaurant name, address details, state etc.
+  Can be used to match the reservation details with a restaurant in our database
+  or dynamically aggregate a new restaurant to match the one that's missing.
+  """
+  locationDetails: String!
+}
+
+input ArticlePublicationDetailInput {
+  """
+  Hashed combination of the url and referenced venue name to keep it unique and deterministic 
+  """
+  id: String!
+
+  """The publication this article was published on (i.e Timeout Eater etc.)"""
+  publication: String!
+
+  """
+  When the article was first published in ISO-8601 format (ex. 2023-11-19)
+  """
+  publishDate: String!
+
+  """The time when this article was scraped by our bot"""
+  scrapeDate: String!
+
+  """Optional title of the published online article / webpage"""
+  title: String
+
+  """
+  Optional description meta tag of the article's web page loaded and parsed by this server (can't be done client side due to cross site blocks)
+  """
+  description: String
+
+  """The direct URL linking to the article publication itself"""
+  url: String!
+
+  """
+  Name of the restaurant or bar the article directly references, used in the backend to search for articles by restaurant name
+  """
+  venueName: String!
+
+  """
+  City associated with the publication, in case no full address information is provided
+  """
+  city: String
+
+  """Optional restaurant address string in case provided by the article"""
+  address: String
+
+  """
+  Optional text content parsed from the article to store for this publication. Can be used for text embeddings
+  """
+  textContent: String
+}
+
+input RestaurantAwardDetailInput {
+  title: String!
+  organization: String!
+  url: String!
+  venueName: String!
+  venueLocation: String!
+  awardDate: String!
+  scrapeDate: String!
+}
+
+input UserLoginInput {
+  userID: ID!
+  authProvider: AuthProviders!
+}
+
+input ImpersonateUserInput {
+  userID: ID!
+  impersonatedFirebaseID: String
+  impersonatedUserName: String
+  impersonatedEmail: String
+  impersonatedPhoneNumber: String
+}
+
+"""Input representing a typical coordinate point struct"""
+input CoordinatePointInput {
+  lng: Float!
+  lat: Float!
+}
+
+input UserProfilePictureUpdateInput {
+  """
+  UInt8Array String, Required input is PNG or JPG/JPEG format, max size is 4MB
+  """
+  fileUploadRequest: FileUploadRequestInput!
+  platform: SupportedFonciiPlatforms!
+}
+
+"""Generic protocol for typical file uploads to conform to."""
+input FileUploadRequestInput {
+  """The ID of the user the upload belongs to"""
+  userID: String!
+
+  """UInt8Array String, defined if uploading, undefined if deleting"""
+  fileDataBuffer: String
+}
+
+input UserPostMediaInput {
+  """URL of the new media (uploaded to the Foncii CDN from the client)"""
+  mediaURL: String!
+
+  """
+  Not applicable for image media, and required for video media (the operation will be rejected if a video
+  thumbnail image is not provided for video-media based updates)
+  """
+  videoMediaThumbnailURL: String
+  mediaType: PostMediaTypes!
+}
+
+"""
+A simple data model that allows users to match their unique cuisine tastes with other users as well
+as match with restaurants that fit their 'taste profile'. This data model can be represented as an
+embedding and used with numerous ML algorithms such as KNN to provide super fast recommendations
+based on vector database search operations.
+"""
+input TasteProfileInput {
+  """
+  ID of the user this taste profile belongs to, before this was the id, but this will allow for the possibility of switching taste profiles for users by allowing multiple taste profiles for a single user
+  """
+  userID: ID!
+
+  """
+  0 - 2 | Optional integer from 0 - 2 - default value if undefined if no value is given
+  """
+  spicePreferenceLevel: Int
+
+  """0 - 2 | ~"""
+  adventureLevel: Int
+
+  """0 - 2 | ~"""
+  distancePreferenceLevel: Int
+
+  """
+  0 - 3 | Optional integer from 0 - 3 - default value is undefined if no value is given
+  """
+  diningPurpose: Int
+
+  """0 - 3 | ~"""
+  ambiancePreference: Int
+
+  """
+  0 - 3 | Optional integer from 0 - 3 - default value if undefined if no value is given, Option 4 aka 'Non-alcoholic beverages only' indicates a non-alcoholic beverage preference i.e no alcohol, the others ~ yes alcohol
+  """
+  drinkPreference: Int
+
+  """A set of unique cuisine IDs, (any duplicates are removed)"""
+  preferredCuisines: [ID!]
+
+  """
+  A set of unique ID strings associated with the dietary restrictions that the user has - default value is an empty array if no value is given
+  """
+  dietaryRestrictions: [ID!]
+
+  """
+  0 - 3 | Optional integer from 0 - 3 - default value is undefined if no value is given | 0.) 4 ($$$$) and below ($$$$), ($$$), ($$), ($) 1.) 3 ($$$) and below ($$$), ($$), ($) 2.) ($$) and below ($$), ($), 1.) ($) and below ($)
+  """
+  preferredPriceRange: Int
+}
+
+type FonciiRestaurantSearchOutput {
+  fonciiRestaurants: [FonciiRestaurant!]!
+
+  """
+  An id that links this output to a search event recorded in the database. This allows the client
+  to attribute this query to other conversion events that stem from this search event, further allowing
+  us to track and analyze user activity pathways, behavioral patterns, and UX KPIs.
+  """
+  queryID: String!
+}
+
+type PlaceSearchOutput {
+  """
+  The corresponding Google Place ID of the place found with the search query (if any)
+  """
+  googlePlaceID: String!
+
+  """
+  The name + location description for the place found with the search query (if any)
+  """
+  description: String!
+
+  """
+  The similarity between the search query and the found place's name. With a higher
+  similarity indicating a closer relationship between the search query string and the 
+  restaurant name string, and the inverse for dissimilar query to place name comparisons.
+  
+  This can be used to further gauge whether or not the found place is what was truly 
+  """
+  similarityScore: Float!
+}
+
+"""
+An output for article publications queried outside of Foncii Restaurant based resolvers.
+"""
+type ArticlePublicationStandaloneOutput {
+  """
+  [Computed] Aggregated articles that mention this restaurant by name. Limited to 10 (Update when needed)
+  """
+  associatedArticlePublicationEdges: [ArticlePublication!]!
+}
+
+"""
+An output for restaurant awards queried outside of Foncii Restaurant based resolvers.
+"""
+type RestaurantAwardStandaloneOutput {
+  """
+  [Computed] Aggregated articles that mention this restaurant by name. Limited to 10 (Update when needed)
+  """
+  associatedRestaurantAwardEdges: [RestaurantAward!]!
+}
+
+type UserPostGalleryOutput {
+  """An array of applicable posts that fulfill some query criteria"""
+  posts: [FMUserPost!]!
+
+  """
+  A count of all of the user's total posts that fulfill the query criteria
+  """
+  totalPosts: Int!
+}
+
+"""
+Defines a basic response for understanding the outcome of a mutation operation
+"""
+type GenericMutationResponse {
+  statusCode: Int!
+  errors: [ClientError!]
+}
+
+"""
+Defines error types to be parsed by the client when an operation goes wrong
+"""
+type ClientError {
+  errorCode: String!
+  description: String!
+}
+
+"""
+Describes the possible outputs that will be mixed together in the explore search suggestions
+Restaurant suggestions for the user to click on, user suggestions, and or popular search terms / queries
+"""
+union ExploreSearchAutoCompleteSuggestion = RestaurantAutoCompleteSuggestion | UserPostAutoCompleteSuggestion | UserAutoCompleteSuggestion | PopularSearchQuerySuggestion
+
+"""
+Different possible timespans to use to compute dashboard graph
+data with.
+"""
+enum AnalyticsTimespan {
+  ONE_WEEK
+  TWO_WEEKS
+  ONE_MONTH
+  SIX_MONTHS
+  ONE_YEAR
+  TWO_YEARS
+}
+
+"""The different possible roles for all Foncii users"""
+enum UserRoles {
+  TEST
+  CREATOR
+  BUSINESS
+  BASIC
+  ADMIN
+}
+
+"""The different possible categories for the influencer leaderboard"""
+enum InfluencerLeaderboardCategory {
+  TOP_RATED
+  TRENDING
+  NEW
+}
+
+"""
+Keeps track of the different tasks that a new user
+can complete for their Foncii user profile.
+"""
+enum FonciiUserProfileTasks {
+  CREATE_ACCOUNT
+  CONNECT_SOCIAL_MEDIA
+  CREATE_TAST_PROFILE
+  INVITE_FRIEND
+}
+
+"""
+Keeps track of where a specific auto-complete search suggestion was
+derived from since multiple sources can be combined to produce a single set of suggestions.
+"""
+enum RestaurantAutoCompleteSuggestionSources {
+  FONCII
+  GOOGLE
+}
+
+"""
+Reservation providers currently supported by Foncii's open reservation
+integration platform, right now only Resy is supported.
+"""
+enum ReservationProviders {
+  RESY
+}
+
+"""
+Integration providers that Foncii Maps users can use to import posts from.
+"""
+enum FMIntegrationProviders {
+  INSTAGRAM
+  TIKTOK
+  GOOGLE_MAPS
+}
+
+"""
+The different kinds of authentication providers the user
+can choose from to gain access to Foncii's services.
+"""
+enum AuthProviders {
+  GOOGLE
+  FACEBOOK
+  TWITTER
+  APPLE
+  DEFAULT
+}
+
+"""All supported media formats that a Foncii Maps post can have."""
+enum PostMediaTypes {
+  IMAGE
+  VIDEO
+  CAROUSEL_ALBUM
+}
+
+enum SortOrders {
+  ASCENDING
+  DESCENDING
+}
+
+"""
+Enum that describes the different kinds of supported Foncii platforms.
+This is used for routing requests from multiple platforms to singular endpoints that
+can handle platform agnostic inputs.
+"""
+enum SupportedFonciiPlatforms {
+  FONCII
+  FONCII_BIZ
+}
+
+interface Publication {
+  """The title of the article"""
+  title: String
+  url: String!
+
+  """
+  [Computed] The domain name of the website provided by the article's URL
+  """
+  websiteDomain: String!
+
+  """
+  [Computed] The favicon for the website (may not exist, depends on the website) but usually located at 'example.com/favicon.ico', uses the parsed web domain
+  """
+  faviconLink: String!
+
+  """
+  The description meta tag of the article's web page loaded and parsed by this server (can't be done client side due to cross site blocks)
+  """
+  description: String
+}
+
+"""
+Generic interface for saving entities, saves are attributed to users
+via their user ID.
+"""
+interface Savable {
+  """Unique identifier for this entity"""
+  id: ID!
+
+  """The user who saved the entity"""
+  userID: ID!
+
+  """When this entity was created / saved"""
+  creationDate: String!
+}
+
+"""Boilerplate for all Foncii user accounts"""
+interface UserAccount {
+  id: ID!
+  username: String!
+  phoneNumber: String
+  email: String!
+  authProviders: [AuthProviders!]!
+
+  """Optional to have, most people might not want to use a profile picture"""
+  profilePictureURL: String
+  creationDate: String!
+  lastUpdated: String!
+  referralCode: String!
+  lastLogin: UserLogin!
+
+  """
+  Optional because a user doesn't sign out until after they login, thus this date is null until that dependent event is triggered
+  """
+  lastSignOut: String
+
+  """
+  [Computed] true if the last sign in date is after the last sign out date
+  """
+  isLoggedIn: Boolean!
+}
+
+"""Properties shared between Google and Yelp"""
+interface PlaceProperties {
+  """
+  The average rating for this place provided by the external platform these properties are attributed to
+  """
+  rating: Float
+
+  """
+  An external link to the site where the data was sourced for this place (i.e Yelp or Google)
+  """
+  externalURL: String
+}
+
+"""
+Simple interface that necessitates the use of an identifier for entities
+that must be differentiated from other similar entities.
+"""
+interface Identifiable {
+  id: ID!
+}
+
+interface Creatable {
+  """ISO-8601 Formatted Date String, when this entity was first created"""
+  creationDate: String!
+}
+
+interface Updatable {
+  """ISO-8601 Formatted Date String, when this entity was first created"""
+  creationDate: String!
+
+  """ISO-8601 Formatted Date String, when this entity was last updated"""
+  lastUpdated: String!
+}
+
+interface Expirable {
+  """
+  Stale date in ISO format that marks when the entity goes 'stale' / expires
+  """
+  staleDate: String!
+}
+
+interface AutoCompleteSuggestion {
+  """The string to match search queries with, used for sorting"""
+  title: String!
+
+  """
+  Human-readable description [business name + location properties] | [username]
+  """
+  description: String!
+
+  """Optional preview image for this search result"""
+  previewImageURL: String
+}
+
+"""
+Describes a user login event handled by the client and tracked by the backend
+"""
+type UserLogin {
+  authProvider: AuthProviders!
+  loginDate: String!
+}
+
+"""
+Simple type that defines a physical location
+Based on real world coordinates
+"""
+type CoordinatePoint {
+  lat: Float!
+  lng: Float!
+}
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+input DiscoveredInstagramUserInput {
+  username: String!
+  fullName: String!
+  phoneNumber: String
+  email: String
+  profilePictureURL: String
+}
+
+input SetUserProfilePictureInput {
+  """
+  UInt8Array String, Required input is PNG or JPG/JPEG format, max size is 4MB
+  """
+  fileUploadRequest: FileUploadRequestInput!
+  platform: SupportedFonciiPlatforms!
+}
+
+input integrationCredentialForUserInput {
+  userID: ID!
+  integrationProvider: FMIntegrationProviders!
+}
+
+input ConnectIntegrationInput {
+  """ID of the user sending the connection request"""
+  userID: ID!
+  provider: FMIntegrationProviders!
+
+  """
+  Code provided by the client to connect to the given integration provider
+  """
+  authToken: String!
+
+  """Required for Instagram integration"""
+  redirectURI: String!
+}
+
+input CreateNewFMUserInput {
+  userID: ID!
+  authProvider: AuthProviders!
+  externalReferralCode: String
+  firstName: String!
+  lastName: String!
+  username: String!
+  phoneNumber: String
+  email: String!
+
+  """
+  Optional photo URL of the user's profile picture tied to an OAuth provider if the user
+  signs in with any of those methods.
+  """
+  oAuthProfilePictureURL: String
+}
+
+input UpdateFMUserMapNameInput {
+  userID: ID!
+  newMapName: String!
+}
+
+"""Foncii Maps User Post"""
+type FMUserPost implements Identifiable & Updatable {
+  id: ID!
+  creationDate: String!
+  lastUpdated: String!
+
+  """ID of the user that created the post (Author / Creator)"""
+  userID: String!
+
+  """Data source is optional as posts can be imported and created manually"""
+  dataSource: PostDataSource
+
+  """User rating + notes + custom tags"""
+  customUserProperties: CustomUserPostProperties!
+
+  """True by default since newly imported posts lack restaurant data"""
+  isHidden: Boolean!
+
+  """True if marked as favorited by the author, false otherwise"""
+  isFavorited: Boolean!
+
+  """
+  Optional Foncii hosted media, updated after the post is created and the corresponding media is uploaded Foncii's storage containers
+  """
+  media: FMUserPostMedia
+
+  """~ Main media field. Only populated if the post is a carousel"""
+  secondaryMedia: [FMUserPostMedia!]
+
+  """
+  Optional identifier for identifying which post this post was copied from (if it's a copy), if it's not a copy this field remains undefined
+  """
+  parentPostID: String
+
+  """
+  [Optional] True if the post should be deleted asynchronously, null otherwise
+  """
+  deletionPending: Boolean
+
+  """
+  [Optional] UTC time in MS indicating the date at midnight (UTC) the post should be deleted, null if the post isn't marked for deletion
+  """
+  scheduledDeletionTimestamp: Float
+
+  """
+  [Computed] True if parent post ID is defined. Simplifies the process of checking if a post is a child post or not on the client side
+  """
+  isChildPost: Boolean!
+
+  """[Computed] True if the post is a video, false otherwise."""
+  mediaIsVideo: Boolean!
+
+  """[Denormalized] Fetched using 'userID' field"""
+  creator: FMUser!
+
+  """
+  [Denormalized] Fetched using 'fonciiRestaurantID' field, optional because restaurants are associated with posts only after the post is created
+  """
+  restaurant: Restaurant
+
+  """
+  [Computed] An extension of the 'restaurant' field with reservation times, articles, influencer insights etc as specified by the 'userPersonalizationInput' input
+  """
+  fonciiRestaurant: FonciiRestaurant
+}
+
+"""
+Modular media encapsulation for Foncii Maps Posts, allows for video and image media resource locators
+to be stored without breaking changes. Also allows for media edges to also be stored if supported later on.
+"""
+type FMUserPostMedia {
+  """URL pointing towards the hosted media file."""
+  mediaURL: String
+
+  """Thumbnail image for video media"""
+  videoMediaThumbnailURL: String
+  mediaType: PostMediaTypes
+}
+
+"""
+Modular data source populated by Foncii Maps Integrations that aggregate social media posts from external sources.
+"""
+type PostDataSource implements Creatable {
+  """Source Identifier"""
+  provider: FMIntegrationProviders!
+
+  """
+  The real non-app-scoped UID of the post's data source. This is the same UID you'd see when viewing the data source on the
+  provider's production site. This is either populated when scraping some data provider instead of directly connecting to
+  their dedicated integration API service. Or when parsing the permalink of newly imported posts from a dedicated integration. The
+  purpose of this field is to prevent duplicate data from being inserted into the database by having a permanent source of truth alongside
+  the existing sourceUID field which is used to compare integration imported posts to other integration imported posts; now both
+  scraped and imported posts can now be compared and deduplicated freely.
+  """
+  liveSourceUID: String
+
+  """
+  The app-scoped (Facebook) or global unique identifier (UID) of the post directly from the original data source
+  """
+  sourceUID: String!
+
+  """
+  Simple description of the post generated by the user, optional b/c some sources might not support captions or they may be optional there as well
+  """
+  caption: String
+
+  """
+  Non-expirable link to the original post, optional in the case of Instagram where posts include Copyrighted media / audio
+  """
+  permalink: String
+
+  """
+  ISO-8601 formatted original creation date of the post sourced from the data source.
+  """
+  creationDate: String!
+
+  """
+  Third-party media source, expirable in 1-2 days if Instagram is the source provider.
+  Any media sourced from here must be persisted to our storage containers immediately.
+  """
+  media: FMUserPostMedia!
+
+  """
+  Secondary media / media edges. Populated in the case of carousel post types
+  Any media sourced from here must be persisted to our storage containers immediately,
+  expirable in 1-2 days if Instagram is the source provider.
+  """
+  secondaryMedia: [FMUserPostMedia!]
+}
+
+"""User defined properties attributed to this post"""
+type CustomUserPostProperties {
+  """
+  A user rating from 1 - 5, rating their experience at the establishment associated with the post
+  """
+  rating: Float
+
+  """
+  Notes defined by the user. Also auto-filled by post captions from imported user posts from Instagram and other
+  applicable sources if available.
+  """
+  notes: String
+
+  """
+  User defined tags that best describe the establishment as well as their unique experience.
+  Auto-filled from imported posts if the post has a caption with hashtags
+  """
+  categories: [String!]
+}
+
+type LocalInfluencerLeaderboardEntry {
+  category: InfluencerLeaderboardCategory!
+  user: FMUser!
+
+  """
+  The total amount of restaurants the influencer has visited in
+  the given search area
+  """
+  totalLocalRestaurantsVisited: Int!
+}
+
+type HTMLMetadataResponse {
+  title: String!
+  description: String!
+  keywords: [String!]!
+
+  """Optional because the user can have 0 posts sometimes"""
+  previewImageURL: String
+}
+
+input ImportPostsInput {
+  integrationCredentialID: String!
+  straddleImport: Boolean
+  classifyPosts: Boolean
+  isFirstImport: Boolean
+}
+
+input ClassifiedDiscoveredInstagramPostsInput {
+  username: String!
+  posts: [ClassifiedDiscoveredInstagramPostInput!]!
+}
+
+input ClassifiedDiscoveredInstagramPostInput {
+  dataSource: InstagramPostDataSourceInput!
+  googlePlaceIDs: [String!]!
+  gpidToInstagramHandleMappings: [gpidToInstagramHandleMappingInput!]!
+}
+
+input gpidToInstagramHandleMappingInput {
+  googlePlaceID: String!
+  instagramHandle: String!
+}
+
+input DiscoveredInstagramPostsInput {
+  username: String!
+  posts: [DiscoveredInstagramPostInput!]!
+}
+
+input DiscoveredInstagramPostInput {
+  dataSource: InstagramPostDataSourceInput!
+}
+
+input InstagramPostDataSourceInput {
+  liveSourceUID: String!
+  sourceUID: String!
+  caption: String
+  permalink: String!
+  creationDate: String!
+  media: UserPostMediaInput!
+  secondaryMedia: [UserPostMediaInput!]
+}
+
+input LocalInfluencerLeaderboardInput {
+  coordinates: CoordinatePointInput!
+  searchRadius: Float!
+}
+
+input FullTextGeospatialPostSearchInput {
+  searchQuery: String! = ""
+  coordinates: CoordinatePointInput!
+  searchRadius: Float!
+}
+
+input UpdateFMUserPostFavoriteStateInput {
+  userInput: UpdateFMUserPostUserInput!
+  isFavorited: Boolean!
+}
+
+input UpdateFMUserPostRestaurantDataInput {
+  userInput: UpdateFMUserPostUserInput!
+
+  """
+  Note: The absence of the place ID indicates the restaurant associated with the post at hand
+  should be removed from the post's data and deassociated with it. If the place ID is defined then
+  the restaurant is then associated with the post by ID in a one-to-many (restaurant-to-post) relationship.
+  """
+  googlePlaceID: ID
+}
+
+input UpdateFMUserPostCustomUserPropertiesInput {
+  userInput: UpdateFMUserPostUserInput!
+  notes: String
+  rating: Float
+  categories: [String!]
+}
+
+input UpdateFMUserPostMediaInput {
+  userInput: UpdateFMUserPostUserInput!
+  mediaInput: UserPostMediaInput!
+}
+
+input CreateFMUserPostInput {
+  userID: ID!
+}
+
+"""
+Reusable input for updating a post's data, posts are owned by users so a user ID has to be passed to verify if the user has the
+rights to edit the post.
+"""
+input UpdateFMUserPostUserInput {
+  postID: ID!
+  userID: ID!
+}
+
+"""Foncii consumer platform events"""
+enum FonciiEvents {
+  EXPLORE_SEARCH
+  USER_GALLERY_SEARCH
+  RESERVATION_SEARCH
+
+  """
+  A reservation intent is an action intended by a user to make a reservation at an establishment.
+  If the user successfully makes a reservation and reports it to our services then a successful
+  reservation is registered in our system. A reservation is able to be transitioned by
+  external inputs such as a user cancelling a reservation and informing us (or anything we see fit down the line).
+  """
+  RESERVATION_INTENT
+
+  """Fired when a user clicks on a restaurant's website link"""
+  BUSINESS_WEBSITE_CLICK
+  RESTAURANT_CLICK
+  POST_CLICK
+  MAP_PIN_CLICK
+  POST_SOURCE_LINK_CLICK
+  ARTICLE_PUBLICATION_CLICK
+
+  """A view of a user / influencer's map / post gallery"""
+  USER_GALLERY_VIEW
+  POST_VIEW
+  RESTAURANT_VIEW
+  TASTE_PROFILE_CREATION
+  TASTE_PROFILE_UPDATE
+  TASTE_PROFILE_DELETION
+  USER_PROFILE_PICTURE_UPDATE
+  POST_CREATION
+  POST_UPDATE
+  POST_DELETION
+  SAVED_RESTAURANT
+  UNSAVED_RESTAURANT
+  SHARE
+}
+
+"""Foncii business platform events"""
+enum FonciiBizEvents {
+  PLACEHOLDER
+}
+
+"""
+Supported share events used across Foncii to identify
+the source of a share event
+"""
+enum ShareEventType {
+  USER_GALLERY
+  RESTAURANT
+  USER_POST
+  REFERRAL
+}
+
+enum ShareSheetDestination {
+  CLIPBOARD
+  REDDIT
+  TWITTER
+  FACEBOOK
+  WHATSAPP
+  LINKEDIN
+  SYSTEM
+}
+
+enum ReservationIntentOutcome {
+  CONFIRMED
+  PASSIVE
+  FAILED
+}
+
+type UserMapAnalyticsDashboard {
+  totalMapViews: Int!
+
+  """
+  How much the total amount of views have gone up or down relative to
+  the last week or 2 weeks / specified timespan.
+  """
+  relativeMapViewChange: Int!
+  mapViewsTimeSeries: [UserAnalyticsDashboardTimeSeriesEntry!]!
+  totalTags: Int!
+  topTagsDistribution: [UserAnalyticsDashboardEntityDistribution!]!
+  totalLocations: Int!
+  topLocationsDistribution: [UserAnalyticsDashboardEntityDistribution!]!
+  totalExperienceViews: Int!
+  mostViewedExperienceDistribution: [UserAnalyticsDashboardEntityDistribution!]!
+}
+
+type UserBusinessWebsiteAnalyticsDashboard {
+  totalBusinessWebsiteClicks: Int!
+  relativeBusinessWebsiteClicksChange: Int!
+  businessWebsiteClicksTimeSeries: [UserAnalyticsDashboardTimeSeriesEntry!]!
+  mostClickedBusinessWebsitesDistribution: [UserAnalyticsDashboardEntityDistribution!]!
+}
+
+type UserReservationIntentsAnalyticsDashboard {
+  totalReservationIntents: Int!
+  relativeReservationIntentsChange: Int!
+  reservationIntentsTimeSeries: [UserAnalyticsDashboardTimeSeriesEntry!]!
+  topReservedRestaurantsDistribution: [UserAnalyticsDashboardEntityDistribution!]!
+}
+
+type UserAnalyticsDashboardTimeSeriesEntry {
+  """
+  Optional category value / name to identify this time series entry with in order
+  to group other similar entries together or differentiate entries from one another
+  """
+  category: String
+
+  """
+  A list of data points spread across some timeline indicated by the labels field
+  """
+  data: [Int!]!
+
+  """
+  A list of formatted date strings that indicate when each data point in this time series
+  was observed / recorded
+  """
+  timestamps: [String!]
+}
+
+type UserAnalyticsDashboardEntityDistribution {
+  """
+  The categorical name to display for this entity (restaurant name or anything else that identifies what this metric
+  quantitatively identifies)
+  """
+  category: String!
+
+  """
+  The total count of this entity. This is used to determine the percentage this entity represents out of some
+  larger dataset.
+  """
+  count: Int!
+}
+
+input FonciiAnalyticsEventInput {
+  """
+  User ID of the user who performed the event (if done by a registered user)
+  """
+  userID: ID
+
+  """
+  Valid BSON UTC datetime value, UTC date time,
+  the time when this event was recorded. Not used for now.
+  Will be used when event driven architecture is implemented and events
+  are ingested at a delayed rate.
+  """
+  timestamp: String!
+
+  """The event that was performed."""
+  event: FonciiEvents!
+
+  """The payload of the event."""
+  payload: FonciiAnalyticsEventPayloads!
+}
+
+input FonciiBizAnalyticsEventInput {
+  """
+  User ID of the user who performed the event (if done by a registered user)
+  """
+  userID: ID
+
+  """
+  Valid BSON UTC datetime value, UTC date time,
+  the time when this event was recorded. Not used for now.
+  Will be used when event driven architecture is implemented and events
+  are ingested at a delayed rate.
+  """
+  timestamp: String!
+
+  """The event that was performed."""
+  event: FonciiBizEvents!
+
+  """The payload of the event."""
+  payload: FonciiBizAnalyticsEventPayloads!
+}
+
+"""
+A collection of the different possible inputs to pass as payloads for
+the associated event types.
+"""
+input FonciiAnalyticsEventPayloads {
+  exploreSearchEventPayload: ExploreSearchEventPayload
+  userGallerySearchEventPayload: UserGallerySearchEventPayload
+  reservationSearchEventPayload: ReservationSearchEventPayload
+  reservationIntentEventPayload: ReservationIntentEventPayload
+  userGalleryViewEventPayload: UserGalleryViewEventPayload
+  postViewEventPayload: PostViewEventPayload
+  restaurantViewEventPayload: RestaurantViewEventPayload
+  postClickEventPayload: PostClickEventPayload
+  restaurantClickEventPayload: RestaurantClickEventPayload
+  mapPinClickEventPayload: MapPinClickEventPayload
+  postSourceLinkClickEventPayload: PostSourceLinkClickEventPayload
+  articlePublicationClickEventPayload: ArticlePublicationClickEventPayload
+  businessWebsiteClickEventPayload: BusinessWebsiteClickEventPayload
+  shareEventPayload: ShareEventPayload
+}
+
+input FonciiBizAnalyticsEventPayloads {
+  placeholder: String
+}
+
+input ExploreSearchEventPayload {
+  queryID: String
+  query: String!
+  searchLocation: CoordinatePointInput!
+  zoomLevel: Float!
+  clientLocation: CoordinatePointInput
+  tags: [String!]!
+  cuisines: [String!]!
+  prices: [Int!]!
+  isManualSearch: Boolean!
+  partySize: Int!
+  reservationDate: String!
+  sourceURL: String!
+  candidateIDs: [String!]!
+  autoCompleteSuggestions: [String!]!
+  averagePercentMatchScore: Float
+  averageQualityScore: Float!
+}
+
+input UserGallerySearchEventPayload {
+  authorUID: String!
+  query: String!
+  searchLocation: CoordinatePointInput!
+  zoomLevel: Float!
+  clientLocation: CoordinatePointInput
+  tags: [String!]!
+  cuisines: [String!]!
+  prices: [Int!]!
+  partySize: Int!
+  reservationDate: String!
+  sourceURL: String!
+  candidateIDs: [String!]!
+  autoCompleteSuggestions: [String!]!
+  averagePercentMatchScore: Float
+  averageQualityScore: Float!
+}
+
+input ReservationSearchEventPayload {
+  fonciiRestaurantID: String!
+  authorID: String
+  clientLocation: CoordinatePointInput
+  partySize: Int!
+  reservationDate: String!
+  sourceURL: String!
+}
+
+input ReservationIntentEventPayload {
+  outcome: ReservationIntentOutcome!
+  venueID: String!
+
+  """
+  The user post the reservation is intending to be made from + author UID, can be used to measure influencer conversion rates relative
+  to successful reservations.
+  """
+  authorUID: String
+  postID: String
+  fonciiRestaurantID: String!
+  percentMatchScore: Float
+  qualityScore: Float!
+  timeSlot: String!
+  reservationDate: String!
+  provider: ReservationProviders!
+  externalURL: String!
+}
+
+input UserGalleryViewEventPayload {
+  authorUID: ID!
+  userSimilarityScore: Float
+  sharedEventID: ID
+  referrer: String
+}
+
+input PostViewEventPayload {
+  postID: ID!
+  authorUID: ID!
+  fonciiRestaurantID: ID!
+  percentMatchScore: Float
+  qualityScore: Float!
+  sharedEventID: ID
+  referrer: String
+}
+
+input RestaurantViewEventPayload {
+  fonciiRestaurantID: ID!
+  percentMatchScore: Float
+  qualityScore: Float!
+  sharedEventID: ID
+  referrer: String
+}
+
+input PostClickEventPayload {
+  postID: ID!
+  authorUID: ID!
+  fonciiRestaurantID: ID!
+  percentMatchScore: Float
+  qualityScore: Float!
+  sourcePostID: ID
+  sourceFonciiRestaurantID: ID
+  sourceURL: String
+  autoCompleteQuery: String
+}
+
+input RestaurantClickEventPayload {
+  fonciiRestaurantID: ID!
+  percentMatchScore: Float
+  qualityScore: Float!
+  sourcePostID: ID
+  sourceFonciiRestaurantID: ID
+  sourceURL: String
+  autoCompleteQuery: String
+  queryID: ID
+}
+
+input MapPinClickEventPayload {
+  fonciiRestaurantID: ID!
+  postID: ID
+  authorUID: ID
+  percentMatchScore: Float
+  qualityScore: Float!
+  sourceURL: String!
+}
+
+input PostSourceLinkClickEventPayload {
+  fonciiRestaurantID: ID!
+  postID: ID!
+  authorUID: ID!
+  percentMatchScore: Float
+  qualityScore: Float!
+  sourceURL: String!
+  destinationURL: String!
+  destinationPlatform: FMIntegrationProviders!
+}
+
+input ArticlePublicationClickEventPayload {
+  fonciiRestaurantID: ID!
+  postID: ID
+  authorUID: ID
+  percentMatchScore: Float
+  qualityScore: Float!
+  sourceURL: String!
+  destinationURL: String!
+  publication: String!
+}
+
+input BusinessWebsiteClickEventPayload {
+  fonciiRestaurantID: ID!
+  postID: ID
+  authorUID: ID
+  percentMatchScore: Float
+  qualityScore: Float!
+  sourceURL: String!
+  destinationURL: String!
+}
+
+input ShareEventPayload {
+  """Generated UID used to track the shared URL generated by the client"""
+  shareEventID: String!
+  shareEventType: ShareEventType!
+  destination: ShareSheetDestination!
+  sourceURL: String!
+}
+
+input UserAnalyticsDashboardInput {
+  userID: ID!
+  timespan: AnalyticsTimespan!
+}
+
+"""Foncii User"""
+type FonciiUser implements UserAccount & Identifiable & Updatable {
+  id: ID!
+  username: String!
+  phoneNumber: String
+  email: String!
+  authProviders: [AuthProviders!]!
+  profilePictureURL: String
+  creationDate: String!
+  lastUpdated: String!
+  referralCode: String!
+  lastLogin: UserLogin!
+  lastSignOut: String
+  isLoggedIn: Boolean!
+  fullName: String!
+  isPhoneNumberVerified: Boolean!
+  notificationsEnabled: Boolean!
+  firstFavorites: [Restaurant!]
+}
+
+"""
+User Profile Tasks
+Computed on a field level to determine if each task was fulfilled.
+"""
+type ProfileTask {
+  id: FonciiUserProfileTasks!
+  isComplete: Boolean!
+}
+
+type UserSession implements Identifiable & Updatable {
+  id: ID!
+  creationDate: String!
+
+  """The last time the session received a heart beat signal"""
+  lastUpdated: String!
+
+  """Optional because not all users are logged in when a session is created"""
+  userID: String
+
+  """The platform this user session is currently hosted on."""
+  platform: SupportedFonciiPlatforms!
+
+  """
+  Always available and can be used to track user sign up conversions /
+  retention rates based on anonymous users (users without userIDs / accounts)
+   using the application before having an established account. This period before
+  having an account is the time before the creation date of the user's account, and
+  if the creation date of this session falls within that period then this can be
+  used to say the person was converted into a user account, and what they did prior
+  to creating an account was XY and Z based on what we track in Amplitude and in our DB.
+  
+  Provided by Amplitude, since that's easier than setting it up from scratch which can
+  be tedious and unreliable and a hassle to maintain and verify.
+  """
+  deviceID: String!
+
+  """
+  String that stores information about the user's device, browser, or app version. This data can help optimize
+  the platform for different devices and identify any compatibility issues.
+  """
+  userAgent: String!
+
+  """The operating system the user's client is operating on"""
+  operatingSystem: String!
+
+  """The preferred language of the user 'the browser's current language'"""
+  language: String!
+
+  """
+  Optional. Storing IP addresses help in fraud detection, location-based personalization, and security.
+  Can also be used to determine the user's location using the MaxMind DB: https://www.maxmind.com/en/geoip-databases
+  """
+  ipAddress: String
+
+  """
+  An array tracking the user's physical location throughout the session's duration (if provided)
+  via coordinate points
+  """
+  clientGeolocationHistory: [CoordinatePoint!]!
+  currentClientGeolocation: CoordinatePoint
+
+  """
+  Referrer URL Information: Track where users are coming from (e.g., referral links, social media, direct traffic)
+  to understand your platform's sources of traffic. Useful to see where a user starts their session from,
+  (Instagram, or Twitter, or Reddit, our App, or just google)
+  """
+  referrer: String
+
+  """
+  In milliseconds [ms]
+  Calculating and storing the session duration can provide insights into user engagement.
+  Computed and stored when the session ends.
+  """
+  sessionDuration: Float!
+
+  """
+  [Computed] True if the session's last heart beat aka update occurred
+  within the max time threshold, false otherwise (session ended).
+  
+  Also false if the session was terminated by the user or some internal
+  service.
+  """
+  isAlive: Boolean!
+
+  """
+  [Computed] True if the user's client has sent a heart beat signal within the last minute, false otherwise
+  or if the session is not alive anymore.
+  """
+  isActive: Boolean!
+
+  """
+  True if the latest location does not match up with the latest history
+  ~ the user is hundreds of miles away from their last reported location.
+  Doesn't do anything for now, but good logic to maintain for security purposes down the line.
+  """
+  isSuspicious: Boolean!
+
+  """
+  User sessions are marked as terminated when the user closes their client or logs out or if a
+  new session is created on the same device that a live session is already being used on.
+  
+  Note: User sessions that die out due to lack of heart beat are not marked as terminated.
+  """
+  terminated: Boolean!
+
+  """
+  Optional Amplitude session ID passed from the client to track occurrences across our own session management system
+  and Amplitude's.
+  """
+  amplitudeSessionID: Float
+}
+
+input isAccountClaimedInput {
+  """The user's account uid."""
+  userID: ID!
+
+  """The platform this user account belongs to."""
+  platform: SupportedFonciiPlatforms!
+}
+
+input CreateUserSessionInput {
+  """Optional because not all users are logged in when a session is created"""
+  userID: ID
+
+  """The platform this user session is currently hosted on."""
+  platform: SupportedFonciiPlatforms!
+
+  """
+  Always available and can be used to track user sign up conversions /
+  retention rates based on anonymous users (users without userIDs / accounts)
+   using the application before having an established account. This period before
+  having an account is the time before the creation date of the user's account, and
+  if the creation date of this session falls within that period then this can be
+  used to say the person was converted into a user account, and what they did prior
+  to creating an account was XY and Z based on what we track in Amplitude and in our DB.
+  
+  Provided by Amplitude, since that's easier than setting it up from scratch which can
+  be tedious and unreliable and a hassle to maintain and verify.
+  """
+  deviceID: ID!
+
+  """The preferred language of the user 'the browser's current language'"""
+  language: String!
+
+  """
+  The user's current physical location, to be recorded and used to track their movement
+  history throughout the session.
+  """
+  clientGeolocation: CoordinatePointInput
+
+  """
+  Referrer URL Information: Track where users are coming from (e.g., referral links, social media, direct traffic)
+  to understand your platform's sources of traffic. Useful to see where a user starts their session from,
+  (Instagram, or Twitter, or Reddit, our App, or just google)
+  """
+  referrer: String
+
+  """
+  Optional Amplitude session ID passed from the client to track occurrences across our own session management system
+  and Amplitude's.
+  """
+  amplitudeSessionID: Float
+}
+
+input UserSessionHeartBeatInput {
+  sessionID: ID!
+
+  """
+  The user's current physical location, to be recorded and used to track their movement
+  history throughout the session.
+  """
+  clientGeolocation: CoordinatePointInput
+}
+
+type Subscription {
+  userSessionEnded: ID!
+}

@@ -1,0 +1,34 @@
+{
+    "schemaNamespace" : "FonciiSchema",
+    "input" : {
+        "operationSearchPaths" : [
+            "**/*.graphql"
+        ],
+        "schemaSearchPaths" : [
+            "**/*.graphqls"
+        ]
+    },
+    "options" : {
+        "apqs": "automaticallyPersist"
+    },
+    "output" : {
+        "schemaTypes" : {
+            "path" : "./Sources/FonciiApollo/Generated/Schema",
+            "moduleType": {
+                "embeddedInTarget": {
+                    "name": "FonciiApollo",
+                    "accessModifier": "internal"
+                }
+            }
+        },
+        "operations" : {
+            "inSchemaModule" : {}
+        },
+        "testMocks": {
+            "absolute": {
+                "path": "./Sources/FonciiApollo/Generated/Schema/MockedOperations/",
+                "accessModifier": "internal"
+            }
+        }
+    }
+}

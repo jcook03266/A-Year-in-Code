@@ -1,0 +1,3 @@
+query GetEmailFromUsername($username: String!) {
+  getUserEmailFromUsername(username: $username)
+}

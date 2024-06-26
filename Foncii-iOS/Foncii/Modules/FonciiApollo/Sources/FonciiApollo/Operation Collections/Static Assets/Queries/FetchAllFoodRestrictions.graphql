@@ -1,0 +1,9 @@
+query FetchAllFoodRestrictions {
+  fetchAllFoodRestrictions {
+    id
+    localizedNames {
+      en
+    }
+    imageURL
+  }
+}

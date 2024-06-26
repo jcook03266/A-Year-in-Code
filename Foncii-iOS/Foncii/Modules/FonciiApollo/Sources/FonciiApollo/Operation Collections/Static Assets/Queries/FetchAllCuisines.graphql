@@ -1,0 +1,9 @@
+query FetchAllCuisines {
+  fetchAllCuisines {
+    id
+    localizedNames {
+      en
+    }
+    imageURL
+  }
+}

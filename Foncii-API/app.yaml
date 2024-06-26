@@ -1,0 +1,62 @@
+# For more info on configuring flexible environments
+# https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml
+service: default
+runtime: nodejs
+env: flex
+
+# OS Config
+runtime_config:
+  operating_system: "ubuntu22"
+  runtime_version: "20"
+
+# Scaling
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 10
+  max_concurrent_requests: 100
+  cpu_utilization:
+    target_utilization: 0.9
+
+# VM Properties
+resources:
+  cpu: 4
+  memory_gb: 4
+  disk_size_gb: 40
+
+handlers:
+  - url: /.*
+    secure: optional
+    redirect_http_response_code: 301
+    script: auto
+
+# Secrets need to have "secret__" to be replaced with corresponding google secret
+env_variables:
+  NODE_ENV: "production"
+  PROJECT_ID: "594762600292"
+  # Data Aggregation API Keys
+  YELP_FUSION_API_SECRET: "secret__production-yelp-fusion-api"
+  GOOGLE_MAPS_API_SECRET: "secret__production-google-maps-api"
+  # Firebase / Google Service Keys
+  FONCII_APP_ADMIN_SDK_CERT_SECRET: "secret__production-foncii-app-admin-sdk-cert"
+  FONCII_MAPS_ADMIN_SDK_CERT_SECRET: "secret__production-foncii-maps-admin-sdk-cert"
+  # Database google secret
+  MONGODB_CONNECTION_SECRET: "secret__production-mongodb-connection"
+  # Resy User API Credentials
+  RESY_API_SECRET: "secret__production-resy-api"
+  # Apollo Studio Credentials
+  # SECRET - secret__APOLLO REQUIRES THIS NAME
+  APOLLO_KEY: "secret__production-apollo"
+  APOLLO_GRAPH_REF: "foodie-supergraph@main"
+  APOLLO_SCHEMA_REPORTING: "true"
+  # API Authorization Secrets
+  # Used for communicating between microservices
+  FONCII_SERVER_API_SECRET: "secret__production-foncii-server-api"
+  API_KEY_SALT_SECRET: "secret__production-api-key-salt"
+  # Local Environment Only, Not exposed anywhere else! | Used for external communications where the true API key can't be exposed
+  ENCIPHERED_SERVER_API_SECRET: "secret__production-enciphered-server-api"
+  # Foncii Maps Env Variables
+  # Instagram API
+  INSTAGRAM_CLIENT_ID: "441821997622037"
+  INSTAGRAM_CLIENT_SECRET: "secret__production-instagram-client"
+  # OpenAI API
+  OPEN_AI_SECRET: "secret__production-openai-key"

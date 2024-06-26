@@ -1,0 +1,132 @@
+config:
+  target: "https://api.foncii.com/"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+  environments:
+    production:
+      target: "https://api.foncii.com/"
+      phases:
+        - duration: 1200
+          arrivalRate: 10
+
+scenarios:
+  - name: "Explore page search flow"
+    flow:
+      - post:
+          url: "/"
+          json:
+            query: |
+              query GetFonciiRestaurantByID($id: ID!, $userPersonalizationInput: UserPersonalizationInput) {
+                getFonciiRestaurantByID(id: $id, userPersonalizationInput: $userPersonalizationInput) { 
+                  fonciiRestaurants {
+                    restaurant {
+                      id
+                      lastUpdated
+                      googleID
+                      yelpID
+                      name
+                      heroImageURL
+                      imageCollectionURLs
+                      description
+                      categories
+                      priceLevel
+                      phoneNumber
+                      operatingHours {
+                        Monday
+                        Tuesday
+                        Wednesday
+                        Thursday
+                        Friday
+                        Saturday
+                        Sunday
+                      }
+                      servesAlcohol
+                      website
+                      coordinates {
+                        lat
+                        lng
+                      }
+                      addressProperties {
+                        formattedAddress
+                        streetAddress
+                        zipCode
+                        city
+                        stateCode
+                        countryCode
+                      }
+                      googleProperties {
+                        rating
+                        externalURL
+                      }
+                      yelpProperties {
+                        rating
+                        externalURL
+                      }
+                      utcOffset
+                    }
+                    percentMatchScore
+                    isOpen
+                    reservationsAvailable
+                    averageFonciiRating
+                    influencerInsightEdges {
+                      creator {
+                        id
+                        profilePictureURL
+                      }
+                      media {
+                        videoMediaThumbnailURL
+                        mediaURL
+                        mediaType
+                      }
+                      mediaIsVideo
+                    }
+                    reservationAvailabilityEdges {
+                      date
+                      timeSlot
+                      provider
+                      venueID
+                      fonciiRestaurantID
+                      externalURL
+                      parameterizedLink
+                      lastChecked
+                    }
+                    isReservable
+                    associatedArticlePublicationEdges {
+                      id
+                      title
+                      venueName
+                      publication
+                      publishDate
+                      scrapeDate
+                      url
+                      websiteDomain
+                      faviconLink
+                    }
+                    qualityScore
+                  }
+                    queryID
+                }
+              }
+            variables:
+              "input":
+                {
+                  "searchRadius": 10000,
+                  "searchQuery": "",
+                  "fonciiRestaurantSearchFilterInput":
+                    { "reservableOnly": false },
+                  "coordinates": { "lng": -73.966, "lat": 40.783 },
+                  "userPersonalizationInput":
+                    {
+                      "userID": "22x40e4Z7IY0FTysKgl2",
+                      "reservationSearchInput":
+                        { "partySize": 2, "targetDate": "2024-4-06" },
+                      "coordinates": { "lng": -73.966, "lat": 40.783 },
+                      "includeReservations": true,
+                      "includeInfluencerInsights": true,
+                      "includeAssociatedArticles": true,
+                    },
+                }
+          capture:
+            json: "$.data.fonciiRestaurantSearch"
+            as: "fonciiRestaurantSearchOutput"

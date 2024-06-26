@@ -1,0 +1,13 @@
+query OnboardingRestaurantSearch($input: SearchForRestaurantsInput) {
+  searchForRestaurants(input: $input) {
+    queryID
+    restaurants {
+      restaurant {
+        id
+        name
+        heroImageURL
+        categories
+      }
+    }
+  }
+}

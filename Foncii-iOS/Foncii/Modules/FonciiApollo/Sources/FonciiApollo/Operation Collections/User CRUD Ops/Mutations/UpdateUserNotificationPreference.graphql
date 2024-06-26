@@ -1,0 +1,10 @@
+mutation UpdateUserNotificationPreference($input: UpdateUserNotificationPreferenceInput!) {
+  updateUserNotificationPreference(input: $input) {
+    notificationsEnabled
+    statusCode
+    errors {
+      errorCode
+      description
+    }
+  }
+}
