@@ -1,5 +1,6 @@
-## A-Year-of-Code
-> Building Foncii
+## A-Year-in-Code | Building Foncii
+
+> The virtual success of this company was comprised of two main goals: to provide consumers like you and me with the most detailed and straightforward experience possible when finding places to eat, and to provide a marketplace for foodie influencers and restaurants to come together and talk business. Foncii's business model operates on four points: the consumer, the restaurant, the influencer, and the platform (us). With all these parties involved, Foncii operates as a self-sustaining platform, allowing regular consumers to explore the culinary landscape of the world without limitation, granting small to large foodie influencers a means of monetizing their brands, and allowing restaurants to gauge tangible metrics of how well influencer marketing campaigns work for their business with concrete data instead of the point and shoot approach that comes with using PR agencies.
 
 <div align="center">
 <img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/d12054df-4528-4c7b-866a-b010ab713df9"> 
@@ -12,7 +13,6 @@
 <div align="center">
 <img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/4f85a6d6-b9d4-4513-b8cf-6bb1b2a8a2ca"> 
 </div>
-
 
 ## Foncii-iOS | Development Life Cycle: (March 2023 - June 2023)
 
