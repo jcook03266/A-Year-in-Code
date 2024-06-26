@@ -1,18 +1,24 @@
-# A-Year-of-Code
-Various production-ready coding samples from 2023 up until now.
+## A-Year-of-Code
+> Building Foncii
 
-![foncii-maps_media_static-media_foncii-maps-hero](https://github.com/jcook03266/A-Year-of-Code/assets/63657230/d12054df-4528-4c7b-866a-b010ab713df9)
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/d12054df-4528-4c7b-866a-b010ab713df9"> 
+</div>
 
 ## Foncii-API | Development Life Cycle: (February 2023 - May 2024)
 
 > Foncii-API GraphQL SDL
-<img width="814" alt="Screenshot 2024-06-26 at 7 01 36 AM" src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/4f85a6d6-b9d4-4513-b8cf-6bb1b2a8a2ca">
+
+<div align="center">
+<img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/4f85a6d6-b9d4-4513-b8cf-6bb1b2a8a2ca"> 
+</div>
+
 
 ## Foncii-iOS | Development Life Cycle: (March 2023 - June 2023)
 
 ## Demos
 **Launch Screen + Login**
-### Videos
+#### Videos
 > Launch Screen -> Splash Screen -> Login / Sign-Up Screen
 <div align="center">
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/95258c73-0f98-4cf9-81e6-2f66094ea030" />
@@ -24,7 +30,7 @@ Various production-ready coding samples from 2023 up until now.
 </div>
 
 **Onboarding + Interstitial Permission Delegate Screens**
-### Videos
+#### Videos
 > Location Permissions + Restaurant Indexing Flow
 <div align="center">
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/6a025adc-4eb9-4ce6-95e9-e7ea51779a8c" />
@@ -35,7 +41,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/e8679b33-5cea-4892-84dc-985546ccefcf" />
 </div>
 
-### Photos
+#### Photos
 > Reservation Configurator Sheet + My Profile Screen
 
 <div align="center">
@@ -46,19 +52,19 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 **Main Feed**
-### Videos
+#### Videos
 <div align="center">
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/86aaaf49-784f-43f4-adea-c6e427beaa14" />
 </div>
   
 **Developer Debug Panel**
-### Videos
+#### Videos
 <div align="center">
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/7d06e880-ecb9-4f57-bc97-92fe5c1cf805" />
 </div>
 
 **Password Reset Flow**
-### Videos
+#### Videos
 <div align="center">
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/8995bf53-4db1-4737-917c-f02747f49d29" />
 </div>
@@ -68,7 +74,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 
 ## Demos
 **Sign-Up + Login**
-### Videos
+#### Videos
 <div align="center">
 
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/52cea304-6038-43d3-8fde-f4ca367fae23" />
@@ -77,7 +83,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 **Explore + Creator Gallery Page**
-### Videos
+#### Videos
 <div align="center">
 
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/ff1f39b0-b6ee-45de-99b3-51b132178efe" />
@@ -87,7 +93,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 
 </div>
 
-### Photos
+#### Photos
 > Explore Page
 <div align="center">
 <img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/a71174c2-cfd2-44a9-bb0c-bdaa8bd46b1f">
@@ -105,7 +111,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 **Taste Profile Quiz**
-### Videos
+#### Videos
 <div align="center">
 
 <video src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/f1555460-842a-41ec-8239-b9bd0d199808" />
@@ -113,7 +119,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 **Detail Views**
-### Photos
+#### Photos
 > Restaurant Detail View
 <div align="center">
 <img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/866c6ad1-aebe-444d-b6e7-0c52bde96621">
@@ -125,7 +131,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 **Menus**
-### Photos
+#### Photos
 > Side Menu
 <div align="center">
 <img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/9059650a-aaec-499d-bfa8-f6f0324c96b4">
@@ -137,7 +143,7 @@ Favorite Restaurant Selector - Taste Profile Creation Flow
 </div>
 
 **Modals**
-### Photos
+#### Photos
 <div align="center">
 <img src="https://github.com/jcook03266/A-Year-of-Code/assets/63657230/1028ac99-f6b5-46db-93db-29bb65402a05">
 </div>
