@@ -1,3 +1,8 @@
+### Donations of Appreciation ♥️☕️
+If this repo helped you, then you can buy me a coffee to say thanks! <3
+
+[Buy Me A Coffee](https://buymeacoffee.com/jus.ck)
+
 ## A-Year-in-Code | Building Foncii
 
 ### Intentions
